@@ -51,19 +51,22 @@ public class ChaseState : AgentState
 
     private void HandleTakeDamage()
     {
-        if (!hasCheckedEscape && agent.Health.CurrentHealth <= escapeThreshold * agent.Health.MaxHealth)
+        if (agent.Health.CurrentHealth <= escapeThreshold * agent.Health.MaxHealth)
         {
-            if (UnityEngine.Random.value < escapeProbability)
+            if (!hasCheckedEscape)
             {
-                agent.TransitionToState(new HealState(agent));
+                if (UnityEngine.Random.value < escapeProbability)
+                {
+                    agent.TransitionToState(new HealState(agent));
+                }
+                hasCheckedEscape = true;
             }
-            hasCheckedEscape = true;
         }
     }
 
     private void HandleAttributeChange(string name, float value, float? origin)
     {
-        if(name == "EscapeThreshold") escapeThreshold = value;
-        else if(name == "EscapeProbability") escapeProbability = value;
+        if (name == "EscapeThreshold") escapeThreshold = value;
+        else if (name == "EscapeProbability") escapeProbability = value;
     }
 }
