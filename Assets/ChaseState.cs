@@ -1,8 +1,10 @@
-﻿public class ChaseState : AgentState
+﻿using System;
+
+public class ChaseState : AgentState
 {
     private bool hasCheckedEscape;
-    private readonly float escapeThreshold;
-    private readonly float escapeProbability;
+    private float escapeThreshold;
+    private float escapeProbability;
 
     public ChaseState(AgentController agent) : base(agent)
     {
@@ -13,6 +15,13 @@
     public override void EnterState()
     {
         agent.Health.OnTakeDamage += HandleTakeDamage;
+        agent.OnAttributeChange += HandleAttributeChange;
+    }
+
+    public override void ExitState()
+    {
+        agent.Health.OnTakeDamage -= HandleTakeDamage;
+        agent.OnAttributeChange -= HandleAttributeChange;
     }
 
     public override void UpdateState()
@@ -50,5 +59,11 @@
             }
             hasCheckedEscape = true;
         }
+    }
+
+    private void HandleAttributeChange(string name, float value, float? origin)
+    {
+        if(name == "EscapeThreshold") escapeThreshold = value;
+        else if(name == "EscapeProbability") escapeProbability = value;
     }
 }
