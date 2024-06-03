@@ -8,11 +8,11 @@ public class Health : MonoBehaviour
     [SerializeField] private Transform respawnPoint; // 复活点
     private float currentHealth;
 
-    public event Action OnDeath; // 死亡事件
-    public event Action OnTakeDamage; // 受伤事件
-    public event Action OnHPChange; // 受伤事件
+    public event Action OnDead;
+    public event Action OnRespawn;
+    public event Action OnTakeDamage;
+    public event Action OnHPChange;
 
-    [ShowInInspector]
     public float CurrentHealth
     {
         get { return currentHealth; }
@@ -49,8 +49,8 @@ public class Health : MonoBehaviour
 
     void Die()
     {
-        OnDeath?.Invoke();
-        gameObject.SetActive(false); // 暂时禁用对象，等待复活
+        gameObject.SetActive(false);
+        OnDead?.Invoke();
     }
 
     public void Respawn()
@@ -58,5 +58,6 @@ public class Health : MonoBehaviour
         CurrentHealth = MaxHealth;
         transform.position = respawnPoint.position;
         gameObject.SetActive(true);
+        OnRespawn?.Invoke();
     }
 }

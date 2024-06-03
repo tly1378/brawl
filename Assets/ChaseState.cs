@@ -1,48 +1,48 @@
-﻿public class ChaseState : EnemyState
+﻿public class ChaseState : AgentState
 {
     public const float HealthThreshold = 0.2f;
     public const float EscapeProbability = 0.5f;
     private bool hasCheckedEscape;
-    private EnemyController enemy;
+    private AgentController agent;
 
-    public override void EnterState(EnemyController enemy)
+    public override void EnterState(AgentController agent)
     {
-        this.enemy = enemy;
-        enemy.Health.OnTakeDamage += HandleTakeDamage;
+        this.agent = agent;
+        agent.Health.OnTakeDamage += HandleTakeDamage;
     }
 
-    public override void UpdateState(EnemyController enemy)
+    public override void UpdateState(AgentController agent)
     {
-        if (!enemy.IsAlive)
+        if (!agent.IsAlive)
         {
-            enemy.TransitionToState(new DeadState());
+            agent.TransitionToState(new DeadState());
             return;
         }
 
-        if (enemy.Target != null)
+        if (agent.Target != null)
         {
-            enemy.Agent.SetDestination(enemy.Target.position);
+            agent.Agent.SetDestination(agent.Target.position);
 
-            Health targetHealth = enemy.Target.GetComponent<Health>();
+            Health targetHealth = agent.Target.GetComponent<Health>();
             if (targetHealth == null || targetHealth.CurrentHealth <= 0)
             {
-                enemy.Target = null;
-                enemy.TransitionToState(new PatrolState());
+                agent.Target = null;
+                agent.TransitionToState(new PatrolState());
             }
         }
         else
         {
-            enemy.TransitionToState(new PatrolState());
+            agent.TransitionToState(new PatrolState());
         }
     }
 
     private void HandleTakeDamage()
     {
-        if (!hasCheckedEscape && enemy.Health.CurrentHealth <= HealthThreshold * enemy.Health.MaxHealth)
+        if (!hasCheckedEscape && agent.Health.CurrentHealth <= HealthThreshold * agent.Health.MaxHealth)
         {
             if (UnityEngine.Random.value < EscapeProbability)
             {
-                enemy.TransitionToState(new HealState());
+                agent.TransitionToState(new HealState());
             }
             hasCheckedEscape = true;
         }

@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour
         bar.Init(health);
     }
 
-    internal async UniTask CreateStateBar(EnemyController enemyController)
+    internal async UniTask CreateStateBar(AgentController enemyController)
     {
         var StateBar = await Addressables.InstantiateAsync("StateBar", transform);
         var bar = StateBar.GetComponent<StateBar>();

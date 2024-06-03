@@ -12,7 +12,7 @@ public class RespawnManager : MonoBehaviour
         Health[] healthComponents = FindObjectsByType<Health>(FindObjectsSortMode.None);
         foreach (Health health in healthComponents)
         {
-            health.OnDeath += () => HandleDeath(health);
+            health.OnDead += () => HandleDeath(health);
         }
     }
 

@@ -5,28 +5,36 @@ public class StateBar : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI text;
     private static new Camera camera;
-    private EnemyController enemyController;
+    private AgentController agent;
 
-    public void Init(EnemyController enemyController)
+    public void Init(AgentController agent)
     {
-        this.enemyController = enemyController;
-        enemyController.OnStateChange += EnemyController_OnStateChange;
+        this.agent = agent;
+        agent.OnStateChange += OnStateChange;
+        camera = camera != null ? camera : Camera.main;
+        agent.Health.OnDead += OnAgentDead;
+        agent.Health.OnRespawn += OnAgentRespawn;
     }
 
-    private void EnemyController_OnStateChange(EnemyState newState)
+    private void OnAgentRespawn()
+    {
+        gameObject.SetActive(true);
+    }
+
+    private void OnAgentDead()
+    {
+        gameObject.SetActive(false);
+    }
+
+    private void OnStateChange(AgentState newState)
     {
         text.SetText($"({newState})");
     }
 
-    private void Awake()
-    {
-        camera = camera != null ? camera : Camera.main;
-    }
-
     private void LateUpdate()
     {
-        if (enemyController == null) return;
-        Vector3 screenPosition = camera.WorldToScreenPoint(enemyController.UIPosition.position);
+        if (agent == null) return;
+        Vector3 screenPosition = camera.WorldToScreenPoint(agent.UIPosition.position);
         transform.position = screenPosition;
     }
 }

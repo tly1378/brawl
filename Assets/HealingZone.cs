@@ -3,31 +3,35 @@ using System.Collections.Generic;
 
 public class HealingZone : MonoBehaviour
 {
+    public int factionId; // 阵营编号
     public float healAmountPerSecond = 10f; // 每秒恢复的血量
 
-    private List<Health> healthObjects = new List<Health>();
+    private readonly List<Health> healthTargets = new();
 
     void OnTriggerEnter(Collider other)
     {
         Health health = other.GetComponent<Health>();
-        if (health != null && !healthObjects.Contains(health))
+        if (health != null && !healthTargets.Contains(health))
         {
-            healthObjects.Add(health);
+            if (health.factionId == factionId)
+            {
+                healthTargets.Add(health);
+            }
         }
     }
 
     void OnTriggerExit(Collider other)
     {
         Health health = other.GetComponent<Health>();
-        if (health != null && healthObjects.Contains(health))
+        if (health != null && healthTargets.Contains(health))
         {
-            healthObjects.Remove(health);
+            healthTargets.Remove(health);
         }
     }
 
     void Update()
     {
-        foreach (Health health in healthObjects)
+        foreach (Health health in healthTargets)
         {
             health.Heal(healAmountPerSecond * Time.deltaTime);
         }

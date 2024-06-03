@@ -129,10 +129,10 @@ GameObject:
   m_Component:
   - component: {fileID: 46228404}
   - component: {fileID: 46228403}
-  - component: {fileID: 46228405}
   - component: {fileID: 46228400}
   - component: {fileID: 46228399}
   - component: {fileID: 46228406}
+  - component: {fileID: 46228407}
   m_Layer: 0
   m_Name: Agent(Faction 1)
   m_TagString: Untagged
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   factionId: 1
   UIPosition: {fileID: 1968917026}
-  respawnPoint: {fileID: 605984077}
+  respawnPoint: {fileID: 1449747753}
 --- !u!114 &46228400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,20 +210,6 @@ Transform:
   - {fileID: 1968917026}
   m_Father: {fileID: 458965551}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &46228405
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 46228398}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae62cb06755134b0ab1f906deed38555, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UIPosition: {fileID: 1968917026}
-  HealPoint: {fileID: 1449747753}
 --- !u!136 &46228406
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -247,6 +233,20 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &46228407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46228398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fe5d370e933712448835d50527c2f01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UIPosition: {fileID: 1968917026}
+  HealPoint: {fileID: 1449747753}
 --- !u!1 &169965215
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,37 +355,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 169965215}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &284743414
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 284743415}
-  m_Layer: 0
-  m_Name: RespawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &284743415
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 284743414}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20, y: 0.5, z: -20}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 680143036}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -568,7 +537,7 @@ Transform:
   m_GameObject: {fileID: 347287968}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 17.74, y: 1, z: -24.71}
+  m_LocalPosition: {x: 17.74, y: 0.5, z: -24.71}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -613,6 +582,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecfd8d47f51bd41c8bbe4ad62a5c7bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  factionId: 2
   healAmountPerSecond: 10
 --- !u!65 &347287972
 BoxCollider:
@@ -1229,10 +1199,10 @@ GameObject:
   m_Component:
   - component: {fileID: 485268127}
   - component: {fileID: 485268132}
-  - component: {fileID: 485268131}
   - component: {fileID: 485268130}
   - component: {fileID: 485268129}
   - component: {fileID: 485268128}
+  - component: {fileID: 485268133}
   m_Layer: 0
   m_Name: Agent(Faction 2)
   m_TagString: Untagged
@@ -1294,7 +1264,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   factionId: 2
   UIPosition: {fileID: 2128278174}
-  respawnPoint: {fileID: 605984077}
+  respawnPoint: {fileID: 347287969}
 --- !u!114 &485268130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1311,20 +1281,6 @@ MonoBehaviour:
   attackDamage: 10
   attackCooldown: 1
   factionId: 2
---- !u!114 &485268131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 485268126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae62cb06755134b0ab1f906deed38555, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UIPosition: {fileID: 2128278174}
-  HealPoint: {fileID: 347287969}
 --- !u!195 &485268132
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1347,6 +1303,20 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &485268133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 485268126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fe5d370e933712448835d50527c2f01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UIPosition: {fileID: 2128278174}
+  HealPoint: {fileID: 347287969}
 --- !u!1 &491608201
 GameObject:
   m_ObjectHideFlags: 0
@@ -1403,7 +1373,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 04c3b3b1d102a446e9adcdd69fe4e3a4, type: 2}
+  - {fileID: 2100000, guid: 589399b341ca4b940a797bbb3ed07e5e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1433,37 +1403,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 491608201}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &605984076
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 605984077}
-  m_Layer: 0
-  m_Name: RespawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &605984077
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 605984076}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.14, y: 0.5, z: 4.88}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 680143036}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &680143035
 GameObject:
   m_ObjectHideFlags: 0
@@ -1503,8 +1442,6 @@ Transform:
   - {fileID: 1476568040}
   - {fileID: 372454016}
   - {fileID: 1235118530}
-  - {fileID: 284743415}
-  - {fileID: 605984077}
   - {fileID: 994936129}
   - {fileID: 1449747753}
   - {fileID: 347287969}
@@ -1839,7 +1776,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   factionId: 0
   UIPosition: {fileID: 1722981532}
-  respawnPoint: {fileID: 284743415}
+  respawnPoint: {fileID: 994936129}
 --- !u!114 &896817374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1909,7 +1846,7 @@ Transform:
   m_GameObject: {fileID: 994936128}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.51, y: 1, z: -14.04}
+  m_LocalPosition: {x: 2.51, y: 0.5, z: -14.04}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -1927,6 +1864,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecfd8d47f51bd41c8bbe4ad62a5c7bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  factionId: 0
   healAmountPerSecond: 10
 --- !u!65 &994936131
 BoxCollider:
@@ -2193,7 +2131,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 04c3b3b1d102a446e9adcdd69fe4e3a4, type: 2}
+  - {fileID: 2100000, guid: 589399b341ca4b940a797bbb3ed07e5e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2655,7 +2593,7 @@ Transform:
   m_GameObject: {fileID: 1449747752}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.7, y: 1, z: 19.1}
+  m_LocalPosition: {x: -2.7, y: 0.5, z: 19.1}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -2700,6 +2638,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecfd8d47f51bd41c8bbe4ad62a5c7bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  factionId: 1
   healAmountPerSecond: 10
 --- !u!65 &1449747756
 BoxCollider:

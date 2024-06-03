@@ -8,11 +8,11 @@ public class MeleeAttack : MonoBehaviour
     public int factionId; // 阵营编号
 
     private float lastAttackTime;
-    private EnemyController enemyController;
+    private AgentController enemyController;
 
     void Start()
     {
-        enemyController = GetComponent<EnemyController>();
+        enemyController = GetComponent<AgentController>();
     }
 
     void Update()

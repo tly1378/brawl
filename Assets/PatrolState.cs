@@ -1,48 +1,57 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
-public class PatrolState : EnemyState
+public class PatrolState : AgentState
 {
     private float wanderTimer;
     private readonly Collider[] hitColliders = new Collider[5];
 
-    public override void EnterState(EnemyController enemy)
+    public override void EnterState(AgentController agent)
     {
-        wanderTimer = EnemyController.WanderInterval;
+        wanderTimer = AgentController.WanderInterval;
     }
 
-    public override void UpdateState(EnemyController enemy)
+    public override void UpdateState(AgentController agent)
     {
-        if (!enemy.IsAlive)
+        if (!agent.IsAlive)
         {
-            enemy.TransitionToState(new DeadState());
+            agent.TransitionToState(new DeadState());
             return;
         }
 
         wanderTimer += Time.deltaTime;
 
-        if (wanderTimer >= EnemyController.WanderInterval)
+        if (wanderTimer >= AgentController.WanderInterval)
         {
-            Vector3 newPos = EnemyController.RandomNavSphere(enemy.transform.position, EnemyController.WanderRadius, -1);
-            enemy.Agent.SetDestination(newPos);
+            Vector3 newPos = RandomNavSphere(agent.transform.position, AgentController.WanderRadius, -1);
+            agent.Agent.SetDestination(newPos);
             wanderTimer = 0;
         }
 
-        int count = Physics.OverlapSphereNonAlloc(enemy.transform.position, EnemyController.ViewRadius, hitColliders);
+        int count = Physics.OverlapSphereNonAlloc(agent.transform.position, AgentController.ViewRadius, hitColliders);
         for (int i = 0; i < count; i++)
         {
             Collider hitCollider = hitColliders[i];
             Health targetHealth = hitCollider.GetComponentInParent<Health>();
-            if (targetHealth != null && targetHealth.factionId != enemy.Health.factionId)
+            if (targetHealth != null && targetHealth.factionId != agent.Health.factionId)
             {
-                enemy.Target = hitCollider.transform;
-                enemy.TransitionToState(new ChaseState());
+                agent.Target = hitCollider.transform;
+                agent.TransitionToState(new ChaseState());
                 break;
             }
         }
 
-        if (enemy.Health.CurrentHealth < enemy.Health.MaxHealth)
+        if (agent.Health.CurrentHealth < agent.Health.MaxHealth)
         {
-            enemy.TransitionToState(new HealState());
+            agent.TransitionToState(new HealState());
         }
+    }
+
+    private static Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask)
+    {
+        Vector3 randDirection = Random.insideUnitSphere * dist;
+        randDirection += origin;
+        NavMesh.SamplePosition(randDirection, out NavMeshHit navHit, dist, layermask);
+        return navHit.position;
     }
 }

@@ -2,14 +2,14 @@ using UnityEngine;
 using UnityEngine.AI;
 using System;
 
-public class EnemyController : MonoBehaviour
+public class AgentController : MonoBehaviour
 {
     public const float WanderRadius = 10f;
     public const float WanderInterval = 5f;
     public const float ViewRadius = 15f;
     public const float HealDistance = 1f;
 
-    public event Action<EnemyState> OnStateChange;
+    public event Action<AgentState> OnStateChange;
     public Transform Target { get; set; }
 
     public Transform UIPosition;
@@ -17,17 +17,27 @@ public class EnemyController : MonoBehaviour
 
     private NavMeshAgent agent;
     private Health health;
-    private EnemyState currentState;
+    private AgentState currentState;
 
     public NavMeshAgent Agent => agent;
     public Health Health => health;
 
     public bool IsAlive => health.CurrentHealth > 0;
 
-    private async void Start()
+    private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         health = GetComponent<Health>();
+        health.OnDead += OnDeath;
+    }
+
+    private void OnDeath()
+    {
+        TransitionToState(new DeadState());
+    }
+
+    private async void Start()
+    {
         await UIManager.Instance.CreateStateBar(this);
         TransitionToState(new PatrolState());
     }
@@ -37,20 +47,12 @@ public class EnemyController : MonoBehaviour
         currentState?.UpdateState(this);
     }
 
-    public void TransitionToState(EnemyState newState)
+    public void TransitionToState(AgentState newState)
     {
         currentState?.ExitState(this);
         currentState = newState;
         currentState.EnterState(this);
         OnStateChange?.Invoke(currentState);
-    }
-
-    public static Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask)
-    {
-        Vector3 randDirection = UnityEngine.Random.insideUnitSphere * dist;
-        randDirection += origin;
-        NavMesh.SamplePosition(randDirection, out NavMeshHit navHit, dist, layermask);
-        return navHit.position;
     }
 
     void OnDrawGizmosSelected()

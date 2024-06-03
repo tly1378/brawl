@@ -1,25 +1,25 @@
 ﻿using UnityEngine;
 
-public class HealState : EnemyState
+public class HealState : AgentState
 {
-    public override void EnterState(EnemyController enemy)
+    public override void EnterState(AgentController agent)
     {
-        enemy.Agent.SetDestination(enemy.HealPoint.position);
+        agent.Agent.SetDestination(agent.HealPoint.position);
     }
 
-    public override void UpdateState(EnemyController enemy)
+    public override void UpdateState(AgentController agent)
     {
-        if (!enemy.IsAlive)
+        if (!agent.IsAlive)
         {
-            enemy.TransitionToState(new DeadState());
+            agent.TransitionToState(new DeadState());
             return;
         }
 
-        if (Vector3.Distance(enemy.transform.position, enemy.HealPoint.position) < EnemyController.HealDistance)
+        if (Vector3.Distance(agent.transform.position, agent.HealPoint.position) < AgentController.HealDistance)
         {
-            if (enemy.Health.CurrentHealth >= enemy.Health.MaxHealth)
+            if (agent.Health.CurrentHealth >= agent.Health.MaxHealth)
             {
-                enemy.TransitionToState(new PatrolState());
+                agent.TransitionToState(new PatrolState());
             }
         }
     }
