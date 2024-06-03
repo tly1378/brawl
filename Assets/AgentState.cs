@@ -1,6 +1,8 @@
 public class AgentState
 {
-    public virtual void EnterState(AgentController agent) { }
-    public virtual void UpdateState(AgentController agent) { }
-    public virtual void ExitState(AgentController agent) { }
+    protected readonly AgentController agent;
+    public AgentState(AgentController agent) => this.agent = agent;
+    public virtual void EnterState() { }
+    public virtual void UpdateState() { }
+    public virtual void ExitState() { }
 }

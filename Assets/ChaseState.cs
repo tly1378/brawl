@@ -1,21 +1,25 @@
 ﻿public class ChaseState : AgentState
 {
-    public const float HealthThreshold = 0.2f;
-    public const float EscapeProbability = 0.5f;
     private bool hasCheckedEscape;
-    private AgentController agent;
+    private readonly float escapeThreshold;
+    private readonly float escapeProbability;
 
-    public override void EnterState(AgentController agent)
+    public ChaseState(AgentController agent) : base(agent)
     {
-        this.agent = agent;
+        escapeThreshold = agent.GetAttribute("EscapeThreshold").GetValueOrDefault(0.2f);
+        escapeProbability = agent.GetAttribute("EscapeProbability").GetValueOrDefault(0.5f);
+    }
+
+    public override void EnterState()
+    {
         agent.Health.OnTakeDamage += HandleTakeDamage;
     }
 
-    public override void UpdateState(AgentController agent)
+    public override void UpdateState()
     {
         if (!agent.IsAlive)
         {
-            agent.TransitionToState(new DeadState());
+            agent.TransitionToState(new DeadState(agent));
             return;
         }
 
@@ -27,22 +31,22 @@
             if (targetHealth == null || targetHealth.CurrentHealth <= 0)
             {
                 agent.Target = null;
-                agent.TransitionToState(new PatrolState());
+                agent.TransitionToState(new PatrolState(agent));
             }
         }
         else
         {
-            agent.TransitionToState(new PatrolState());
+            agent.TransitionToState(new PatrolState(agent));
         }
     }
 
     private void HandleTakeDamage()
     {
-        if (!hasCheckedEscape && agent.Health.CurrentHealth <= HealthThreshold * agent.Health.MaxHealth)
+        if (!hasCheckedEscape && agent.Health.CurrentHealth <= escapeThreshold * agent.Health.MaxHealth)
         {
-            if (UnityEngine.Random.value < EscapeProbability)
+            if (UnityEngine.Random.value < escapeProbability)
             {
-                agent.TransitionToState(new HealState());
+                agent.TransitionToState(new HealState(agent));
             }
             hasCheckedEscape = true;
         }

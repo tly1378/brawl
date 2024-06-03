@@ -2,24 +2,30 @@
 
 public class HealState : AgentState
 {
-    public override void EnterState(AgentController agent)
+    private const float HealDistance = 1f;
+
+    public HealState(AgentController agent) : base(agent)
+    {
+    }
+
+    public override void EnterState()
     {
         agent.Agent.SetDestination(agent.HealPoint.position);
     }
 
-    public override void UpdateState(AgentController agent)
+    public override void UpdateState()
     {
         if (!agent.IsAlive)
         {
-            agent.TransitionToState(new DeadState());
+            agent.TransitionToState(new DeadState(agent));
             return;
         }
 
-        if (Vector3.Distance(agent.transform.position, agent.HealPoint.position) < AgentController.HealDistance)
+        if (Vector3.Distance(agent.transform.position, agent.HealPoint.position) < HealDistance)
         {
             if (agent.Health.CurrentHealth >= agent.Health.MaxHealth)
             {
-                agent.TransitionToState(new PatrolState());
+                agent.TransitionToState(new PatrolState(agent));
             }
         }
     }

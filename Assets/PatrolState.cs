@@ -3,32 +3,39 @@ using UnityEngine.AI;
 
 public class PatrolState : AgentState
 {
+    public const float ViewRadius = 15f;
+    private const float WanderRadius = 10f;
+    private const float WanderInterval = 5f;
     private float wanderTimer;
     private readonly Collider[] hitColliders = new Collider[5];
 
-    public override void EnterState(AgentController agent)
+    public PatrolState(AgentController agent) : base(agent)
     {
-        wanderTimer = AgentController.WanderInterval;
     }
 
-    public override void UpdateState(AgentController agent)
+    public override void EnterState()
+    {
+        wanderTimer = WanderInterval;
+    }
+
+    public override void UpdateState()
     {
         if (!agent.IsAlive)
         {
-            agent.TransitionToState(new DeadState());
+            agent.TransitionToState(new DeadState(agent));
             return;
         }
 
         wanderTimer += Time.deltaTime;
 
-        if (wanderTimer >= AgentController.WanderInterval)
+        if (wanderTimer >= WanderInterval)
         {
-            Vector3 newPos = RandomNavSphere(agent.transform.position, AgentController.WanderRadius, -1);
+            Vector3 newPos = RandomNavSphere(agent.transform.position, WanderRadius, -1);
             agent.Agent.SetDestination(newPos);
             wanderTimer = 0;
         }
 
-        int count = Physics.OverlapSphereNonAlloc(agent.transform.position, AgentController.ViewRadius, hitColliders);
+        int count = Physics.OverlapSphereNonAlloc(agent.transform.position, ViewRadius, hitColliders);
         for (int i = 0; i < count; i++)
         {
             Collider hitCollider = hitColliders[i];
@@ -36,14 +43,14 @@ public class PatrolState : AgentState
             if (targetHealth != null && targetHealth.factionId != agent.Health.factionId)
             {
                 agent.Target = hitCollider.transform;
-                agent.TransitionToState(new ChaseState());
+                agent.TransitionToState(new ChaseState(agent));
                 break;
             }
         }
 
         if (agent.Health.CurrentHealth < agent.Health.MaxHealth)
         {
-            agent.TransitionToState(new HealState());
+            agent.TransitionToState(new HealState(agent));
         }
     }
 
