@@ -43,7 +43,8 @@ public class Health : MonoBehaviour
 
     public void Heal(float amount)
     {
-        CurrentHealth = Mathf.Clamp(CurrentHealth + amount, 0, MaxHealth);
+        if(CurrentHealth > 0)
+            CurrentHealth = Mathf.Clamp(CurrentHealth + amount, 0, MaxHealth);
     }
 
     void Die()

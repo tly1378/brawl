@@ -1,6 +1,6 @@
-﻿public enum EnemyState
+public class EnemyState
 {
-    Patrol,
-    Chase,
-    Heal
+    public virtual void EnterState(EnemyController enemy) { }
+    public virtual void UpdateState(EnemyController enemy) { }
+    public virtual void ExitState(EnemyController enemy) { }
 }

@@ -39,7 +39,7 @@ public class MeleeAttack : MonoBehaviour
                 // 设置攻击目标
                 if (enemyController != null)
                 {
-                    enemyController.target = hitCollider.transform;
+                    enemyController.Target = hitCollider.transform;
                 }
 
                 return; // 攻击一次后退出

@@ -222,9 +222,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae62cb06755134b0ab1f906deed38555, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  healPoint: {fileID: 1449747753}
   UIPosition: {fileID: 1968917026}
+  HealPoint: {fileID: 1449747753}
 --- !u!136 &46228406
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1324,9 +1323,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae62cb06755134b0ab1f906deed38555, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  healPoint: {fileID: 347287969}
   UIPosition: {fileID: 2128278174}
+  HealPoint: {fileID: 347287969}
 --- !u!195 &485268132
 NavMeshAgent:
   m_ObjectHideFlags: 0
