@@ -1,25 +1,28 @@
 using TMPro;
 using UnityEngine;
 
-public class AttributesViewer : MonoBehaviour
+namespace Brawl
 {
-    [SerializeField] private AgentController agent;
-    [SerializeField] private TextMeshProUGUI text;
-
-    private void Start()
+    public class AttributesViewer : MonoBehaviour
     {
-        agent.OnAttributeChange += OnAttributeChange;
-    }
+        [SerializeField] private AgentController agent;
+        [SerializeField] private TextMeshProUGUI text;
 
-    private void OnAttributeChange(string name, float value, float? origin)
-    {
-        if(origin.HasValue)
+        private void Start()
         {
-            text.text += $"{name}: {origin}=>{value}\n";
+            agent.OnAttributeChange += OnAttributeChange;
         }
-        else
+
+        private void OnAttributeChange(string name, float value, float? origin)
         {
-            text.text += $"{name}: {value}\n";
+            if (origin.HasValue)
+            {
+                text.text += $"{name}: {origin}=>{value}\n";
+            }
+            else
+            {
+                text.text += $"{name}: {value}\n";
+            }
         }
     }
 }

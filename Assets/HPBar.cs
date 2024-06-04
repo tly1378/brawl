@@ -1,37 +1,40 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HPBar : MonoBehaviour
+namespace Brawl
 {
-    private static new Camera camera;
-    [SerializeField] private Image image;
-    private Health health;
-
-    private void Awake()
+    public class HPBar : MonoBehaviour
     {
-        camera = camera != null ? camera : Camera.main;
-    }
+        private static new Camera camera;
+        [SerializeField] private Image image;
+        private Health health;
 
-    public void Init(Health health)
-    {
-        this.health = health;
-        health.OnHPChange += OnHPChange;
-    }
+        private void Awake()
+        {
+            camera = camera != null ? camera : Camera.main;
+        }
 
-    private void OnHPChange()
-    {
-        SetHP(health.CurrentHealth / health.MaxHealth);
-    }
+        public void Init(Health health)
+        {
+            this.health = health;
+            health.OnHPChange += OnHPChange;
+        }
 
-    private void LateUpdate()
-    {
-        if (health == null) return;
-        Vector3 screenPosition = camera.WorldToScreenPoint(health.UIPosition.position);
-        transform.position = screenPosition;
-    }
+        private void OnHPChange()
+        {
+            SetHP(health.CurrentHealth / health.MaxHealth);
+        }
 
-    private void SetHP(float rate)
-    {
-        image.fillAmount = rate;
+        private void LateUpdate()
+        {
+            if (health == null) return;
+            Vector3 screenPosition = camera.WorldToScreenPoint(health.UIPosition.position);
+            transform.position = screenPosition;
+        }
+
+        private void SetHP(float rate)
+        {
+            image.fillAmount = rate;
+        }
     }
 }

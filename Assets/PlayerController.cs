@@ -1,29 +1,32 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class PlayerController : MonoBehaviour
+namespace Brawl
 {
-    private NavMeshAgent agent;
-
-    void Start()
+    public class PlayerController : MonoBehaviour
     {
-        agent = GetComponent<NavMeshAgent>();
-    }
+        private NavMeshAgent agent;
 
-    void Update()
-    {
-        // 检测鼠标左键点击
-        if (Input.GetMouseButtonDown(0))
+        void Start()
         {
-            // 创建射线
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+            agent = GetComponent<NavMeshAgent>();
+        }
 
-            // 检测射线是否击中地面
-            if (Physics.Raycast(ray, out hit))
+        void Update()
+        {
+            // 检测鼠标左键点击
+            if (Input.GetMouseButtonDown(0))
             {
-                // 设置NavMeshAgent的目标位置
-                agent.SetDestination(hit.point);
+                // 创建射线
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                // 检测射线是否击中地面
+                if (Physics.Raycast(ray, out hit))
+                {
+                    // 设置NavMeshAgent的目标位置
+                    agent.SetDestination(hit.point);
+                }
             }
         }
     }

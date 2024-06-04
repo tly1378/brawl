@@ -5,87 +5,89 @@ using UnityEngine.Networking;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-public class AIAdjuster : MonoBehaviour
+namespace Brawl
 {
-    [SerializeField] private AgentController agent;
-    [SerializeField][TextArea] private string message;
-
-    public async void RequestForAdjustment()
+    public class AIAdjuster : MonoBehaviour
     {
-        var text = await OpenAIRequest.CallChatGPT(message, agent.ShowAttributes());
-        var response = JObject.Parse(text);
-        Debug.Log(response);
-        string arguments = (string)response["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"];
-        var json = JObject.Parse(arguments);
-        if (json.TryGetValue("EscapeThreshold", out var threshold))
+        [SerializeField] private AgentController agent;
+        [SerializeField][TextArea] private string message;
+
+        public async void RequestForAdjustment()
         {
-            agent.SetAttribute("EscapeThreshold", (float)threshold);
-        }
-        if (json.TryGetValue("EscapeProbability", out var probability))
-        {
-            agent.SetAttribute("EscapeProbability", (float)probability);
+            var text = await OpenAIRequest.CallChatGPT(message, agent.ShowAttributes());
+            var response = JObject.Parse(text);
+            Debug.Log(response);
+            string arguments = (string)response["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"];
+            var json = JObject.Parse(arguments);
+            if (json.TryGetValue("EscapeThreshold", out var threshold))
+            {
+                agent.SetAttribute("EscapeThreshold", (float)threshold);
+            }
+            if (json.TryGetValue("EscapeProbability", out var probability))
+            {
+                agent.SetAttribute("EscapeProbability", (float)probability);
+            }
         }
     }
-}
 
-public static class OpenAIRequest
-{
-    private const string apiUrl = "https://api.openai.com/v1/chat/completions";
-    private const string apiKey = "sk-proj-tzMHHZdwzWqvLAPlv8T7T3BlbkFJD8oQ3sIiyfRTGx6rleym";
-
-    public static async UniTask<string> CallChatGPT(string message, string attributes)
+    public static class OpenAIRequest
     {
-        if (string.IsNullOrEmpty(apiKey))
+        private const string apiUrl = "https://api.openai.com/v1/chat/completions";
+        private const string apiKey = "sk-proj-tzMHHZdwzWqvLAPlv8T7T3BlbkFJD8oQ3sIiyfRTGx6rleym";
+
+        public static async UniTask<string> CallChatGPT(string message, string attributes)
         {
-            Debug.LogError("API key is missing. Set the OPENAI_API_KEY environment variable.");
-            return null;
-        }
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                Debug.LogError("API key is missing. Set the OPENAI_API_KEY environment variable.");
+                return null;
+            }
 
-        var messages = CreateMessages(message, attributes);
-        var tools = CreateTools();
+            var messages = CreateMessages(message, attributes);
+            var tools = CreateTools();
 
-        var requestBody = new JObject
+            var requestBody = new JObject
         {
             { "model", "gpt-4o" },
             { "messages", JToken.FromObject(messages) },
             { "tools", JToken.FromObject(tools) }
         };
 
-        string jsonBody = requestBody.ToString();
-        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+            string jsonBody = requestBody.ToString();
+            byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
 
-        using UnityWebRequest webRequest = new(apiUrl, "POST");
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
-        webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        webRequest.downloadHandler = new DownloadHandlerBuffer();
+            using UnityWebRequest webRequest = new(apiUrl, "POST");
+            webRequest.SetRequestHeader("Content-Type", "application/json");
+            webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
+            webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            webRequest.downloadHandler = new DownloadHandlerBuffer();
 
-        var operation = webRequest.SendWebRequest();
+            var operation = webRequest.SendWebRequest();
 
-        while (!operation.isDone)
-        {
-            await UniTask.Yield();
+            while (!operation.isDone)
+            {
+                await UniTask.Yield();
+            }
+
+            if (webRequest.result == UnityWebRequest.Result.Success)
+            {
+                return webRequest.downloadHandler.text;
+            }
+            else
+            {
+                Debug.LogError("Error: " + webRequest.error);
+                return null;
+            }
         }
 
-        if (webRequest.result == UnityWebRequest.Result.Success)
-        {
-            return webRequest.downloadHandler.text;
-        }
-        else
-        {
-            Debug.LogError("Error: " + webRequest.error);
-            return null;
-        }
-    }
-
-    private static List<Dictionary<string, string>> CreateMessages(string message, string attributes) => new()
+        private static List<Dictionary<string, string>> CreateMessages(string message, string attributes) => new()
     {
         new() { { "role", "system" }, { "content", "You are an AI that helps adjust parameters for a behavior tree in a MOBA game.\n" +
                 "The current properties are as follows(The absence of attributes indicates the default value.): " + attributes } },
         new() { { "role", "user" }, { "content", message } }
     };
 
-    private static List<Dictionary<string, object>> CreateTools() => new()
+        private static List<Dictionary<string, object>> CreateTools() => new()
     {
         new() {
             { "type", "function" },
@@ -119,4 +121,5 @@ public static class OpenAIRequest
             }
         }
     };
+    }
 }

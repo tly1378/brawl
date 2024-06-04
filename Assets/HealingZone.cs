@@ -1,39 +1,42 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class HealingZone : MonoBehaviour
+namespace Brawl
 {
-    public int factionId; // 阵营编号
-    public float healAmountPerSecond = 10f; // 每秒恢复的血量
-
-    private readonly List<Health> healthTargets = new();
-
-    void OnTriggerEnter(Collider other)
+    public class HealingZone : MonoBehaviour
     {
-        Health health = other.GetComponent<Health>();
-        if (health != null && !healthTargets.Contains(health))
+        public int factionId; // 阵营编号
+        public float healAmountPerSecond = 10f; // 每秒恢复的血量
+
+        private readonly List<Health> healthTargets = new();
+
+        void OnTriggerEnter(Collider other)
         {
-            if (health.factionId == factionId)
+            Health health = other.GetComponent<Health>();
+            if (health != null && !healthTargets.Contains(health))
             {
-                healthTargets.Add(health);
+                if (health.factionId == factionId)
+                {
+                    healthTargets.Add(health);
+                }
             }
         }
-    }
 
-    void OnTriggerExit(Collider other)
-    {
-        Health health = other.GetComponent<Health>();
-        if (health != null && healthTargets.Contains(health))
+        void OnTriggerExit(Collider other)
         {
-            healthTargets.Remove(health);
+            Health health = other.GetComponent<Health>();
+            if (health != null && healthTargets.Contains(health))
+            {
+                healthTargets.Remove(health);
+            }
         }
-    }
 
-    void Update()
-    {
-        foreach (Health health in healthTargets)
+        void Update()
         {
-            health.Heal(healAmountPerSecond * Time.deltaTime);
+            foreach (Health health in healthTargets)
+            {
+                health.Heal(healAmountPerSecond * Time.deltaTime);
+            }
         }
     }
 }

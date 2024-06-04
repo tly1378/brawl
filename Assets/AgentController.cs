@@ -3,83 +3,86 @@ using UnityEngine.AI;
 using System;
 using System.Collections.Generic;
 
-public class AgentController : MonoBehaviour
+namespace Brawl
 {
-    public event Action<AgentState> OnStateChange;
-    public event Action<string, float, float?> OnAttributeChange;
-    public Transform UIPosition;
-    public Transform HealPoint;
-    private NavMeshAgent agent;
-    private Health health;
-    private AgentState currentState;
-    private readonly Dictionary<string, float> attributes = new();
-
-    public NavMeshAgent Agent => agent;
-    public Health Health => health;
-    public bool IsAlive => health.CurrentHealth > 0;
-    public Transform Target { get; set; }
-
-    public void SetAttribute(string name, float value)
+    public class AgentController : MonoBehaviour
     {
-        if(attributes.TryGetValue(name, out var origin))
+        public event Action<AgentState> OnStateChange;
+        public event Action<string, float, float?> OnAttributeChange;
+        public Transform UIPosition;
+        public Transform HealPoint;
+        private NavMeshAgent agent;
+        private Health health;
+        private AgentState currentState;
+        private readonly Dictionary<string, float> attributes = new();
+
+        public NavMeshAgent Agent => agent;
+        public Health Health => health;
+        public bool IsAlive => health.CurrentHealth > 0;
+        public Transform Target { get; set; }
+
+        public void SetAttribute(string name, float value)
         {
-            attributes[name] = value;
-            OnAttributeChange?.Invoke(name, value, origin);
+            if (attributes.TryGetValue(name, out var origin))
+            {
+                attributes[name] = value;
+                OnAttributeChange?.Invoke(name, value, origin);
+            }
+            else
+            {
+                attributes[name] = value;
+                OnAttributeChange?.Invoke(name, value, null);
+            }
         }
-        else
+
+        public float? GetAttribute(string name)
         {
-            attributes[name] = value;
-            OnAttributeChange?.Invoke(name, value, null);
+            if (attributes.TryGetValue(name, out var value))
+            {
+                return value;
+            }
+            return null;
         }
-    }
 
-    public float? GetAttribute(string name)
-    {
-        if (attributes.TryGetValue(name, out var value))
+        public string ShowAttributes()
         {
-            return value;
+            string description = "";
+            foreach (var attr in attributes)
+            {
+                description += attr.Key + "=" + attr.Value + "\n";
+            }
+            return description;
         }
-        return null;
-    }
 
-    public string ShowAttributes()
-    {
-        string description = "";
-        foreach (var attr in attributes)
+        private void Awake()
         {
-            description += attr.Key + "=" + attr.Value + "\n";
+            agent = GetComponent<NavMeshAgent>();
+            health = GetComponent<Health>();
         }
-        return description;
-    }
 
-    private void Awake()
-    {
-        agent = GetComponent<NavMeshAgent>();
-        health = GetComponent<Health>();
-    }
+        private async void Start()
+        {
+            await UIManager.Instance.CreateStateBar(this);
+            TransitionToState(new PatrolState(this));
+        }
 
-    private async void Start()
-    {
-        await UIManager.Instance.CreateStateBar(this);
-        TransitionToState(new PatrolState(this));
-    }
+        private void Update()
+        {
+            currentState?.UpdateState();
+        }
 
-    private void Update()
-    {
-        currentState?.UpdateState();
-    }
+        public void TransitionToState(AgentState newState)
+        {
+            currentState?.ExitState();
+            currentState = newState;
+            currentState.EnterState();
+            OnStateChange?.Invoke(currentState);
+        }
 
-    public void TransitionToState(AgentState newState)
-    {
-        currentState?.ExitState();
-        currentState = newState;
-        currentState.EnterState();
-        OnStateChange?.Invoke(currentState);
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, PatrolState.ViewRadius);
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, PatrolState.ViewRadius);
+        }
     }
 }

@@ -1,24 +1,25 @@
 using UnityEngine;
-using System.Collections.Generic;
-using System.Collections;
 using Cysharp.Threading.Tasks;
 
-public class RespawnManager : MonoBehaviour
+namespace Brawl
 {
-    public float respawnTime = 5f; // 复活时间
-
-    void Start()
+    public class RespawnManager : MonoBehaviour
     {
-        Health[] healthComponents = FindObjectsByType<Health>(FindObjectsSortMode.None);
-        foreach (Health health in healthComponents)
+        public float respawnTime = 5f; // 复活时间
+
+        void Start()
         {
-            health.OnDead += () => HandleDeath(health);
+            Health[] healthComponents = FindObjectsByType<Health>(FindObjectsSortMode.None);
+            foreach (Health health in healthComponents)
+            {
+                health.OnDead += () => HandleDeath(health);
+            }
         }
-    }
 
-    async void HandleDeath(Health health)
-    {
-        await UniTask.WaitForSeconds(respawnTime);
-        health.Respawn();
+        async void HandleDeath(Health health)
+        {
+            await UniTask.WaitForSeconds(respawnTime);
+            health.Respawn();
+        }
     }
 }

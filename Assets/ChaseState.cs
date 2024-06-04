@@ -1,72 +1,79 @@
-﻿using System;
-
-public class ChaseState : AgentState
+﻿namespace Brawl
 {
-    private bool hasCheckedEscape;
-    private float escapeThreshold;
-    private float escapeProbability;
-
-    public ChaseState(AgentController agent) : base(agent)
+    public class ChaseState : AgentState
     {
-        escapeThreshold = agent.GetAttribute("EscapeThreshold").GetValueOrDefault(0.2f);
-        escapeProbability = agent.GetAttribute("EscapeProbability").GetValueOrDefault(0.5f);
-    }
+        private bool hasCheckedEscape;
+        private float escapeThreshold = 0.2f;
+        private float escapeProbability = 0.5f;
 
-    public override void EnterState()
-    {
-        agent.Health.OnTakeDamage += HandleTakeDamage;
-        agent.OnAttributeChange += HandleAttributeChange;
-    }
-
-    public override void ExitState()
-    {
-        agent.Health.OnTakeDamage -= HandleTakeDamage;
-        agent.OnAttributeChange -= HandleAttributeChange;
-    }
-
-    public override void UpdateState()
-    {
-        if (!agent.IsAlive)
+        public ChaseState(AgentController agent) : base(agent)
         {
-            agent.TransitionToState(new DeadState(agent));
-            return;
+            escapeThreshold = agent.GetAttribute("EscapeThreshold").GetValueOrDefault(escapeThreshold);
+            escapeProbability = agent.GetAttribute("EscapeProbability").GetValueOrDefault(escapeProbability);
         }
 
-        if (agent.Target != null)
+        public override void EnterState()
         {
-            agent.Agent.SetDestination(agent.Target.position);
+            agent.Health.OnTakeDamage += HandleTakeDamage;
+            agent.OnAttributeChange += HandleAttributeChange;
+        }
 
-            Health targetHealth = agent.Target.GetComponent<Health>();
-            if (targetHealth == null || targetHealth.CurrentHealth <= 0)
+        public override void ExitState()
+        {
+            agent.Health.OnTakeDamage -= HandleTakeDamage;
+            agent.OnAttributeChange -= HandleAttributeChange;
+        }
+
+        public override void UpdateState()
+        {
+            if (!agent.IsAlive)
             {
-                agent.Target = null;
+                agent.TransitionToState(new DeadState(agent));
+                return;
+            }
+
+            if (agent.Target != null)
+            {
+                agent.Agent.SetDestination(agent.Target.position);
+
+                Health targetHealth = agent.Target.GetComponent<Health>();
+                if (targetHealth == null || targetHealth.CurrentHealth <= 0)
+                {
+                    agent.Target = null;
+                    agent.TransitionToState(new PatrolState(agent));
+                }
+            }
+            else
+            {
                 agent.TransitionToState(new PatrolState(agent));
             }
         }
-        else
-        {
-            agent.TransitionToState(new PatrolState(agent));
-        }
-    }
 
-    private void HandleTakeDamage()
-    {
-        if (agent.Health.CurrentHealth <= escapeThreshold * agent.Health.MaxHealth)
+        private void HandleTakeDamage()
         {
-            if (!hasCheckedEscape)
+            if (agent.Health.CurrentHealth <= escapeThreshold * agent.Health.MaxHealth)
             {
-                if (UnityEngine.Random.value < escapeProbability)
+                if (!hasCheckedEscape)
                 {
-                    agent.TransitionToState(new HealState(agent));
+                    if (UnityEngine.Random.value < escapeProbability)
+                    {
+                        agent.TransitionToState(new HealState(agent));
+                    }
+                    hasCheckedEscape = true;
                 }
-                hasCheckedEscape = true;
             }
         }
-    }
 
-    private void HandleAttributeChange(string name, float value, float? origin)
-    {
-        if (name == "EscapeThreshold") escapeThreshold = value;
-        else if (name == "EscapeProbability") escapeProbability = value;
+        private void HandleAttributeChange(string name, float value, float? origin)
+        {
+            if (name == "EscapeThreshold")
+            {
+                escapeThreshold = value;
+            }
+            else if (name == "EscapeProbability")
+            {
+                escapeProbability = value;
+            }
+        }
     }
 }

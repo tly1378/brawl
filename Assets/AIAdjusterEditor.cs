@@ -1,17 +1,20 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(AIAdjuster))]
-public class AIAdjusterEditor : Editor
+namespace Brawl
 {
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(AIAdjuster))]
+    public class AIAdjusterEditor : Editor
     {
-        DrawDefaultInspector();
-
-        AIAdjuster myScript = (AIAdjuster)target;
-        if (GUILayout.Button("Adjuster"))
+        public override void OnInspectorGUI()
         {
-            myScript.RequestForAdjustment();
+            DrawDefaultInspector();
+
+            AIAdjuster myScript = (AIAdjuster)target;
+            if (GUILayout.Button("Adjuster"))
+            {
+                myScript.RequestForAdjustment();
+            }
         }
     }
 }
