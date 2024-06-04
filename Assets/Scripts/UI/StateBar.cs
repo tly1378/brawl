@@ -1,3 +1,4 @@
+using Brawl.State;
 using TMPro;
 using UnityEngine;
 
@@ -6,16 +7,19 @@ namespace Brawl
     public class StateBar : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI text;
-        private static new Camera camera;
         private AgentController agent;
 
-        public void Init(AgentController agent)
+        public void Set(AgentController agent)
         {
             this.agent = agent;
             agent.OnStateChange += OnStateChange;
-            camera = camera != null ? camera : Camera.main;
             agent.Health.OnDead += OnAgentDead;
             agent.Health.OnRespawn += OnAgentRespawn;
+        }
+
+        public void Set(string text)
+        {
+            this.text.SetText($"({text})");
         }
 
         private void OnAgentRespawn()
@@ -23,7 +27,7 @@ namespace Brawl
             gameObject.SetActive(true);
         }
 
-        private void OnAgentDead()
+        private void OnAgentDead(Health _)
         {
             gameObject.SetActive(false);
         }
@@ -33,11 +37,14 @@ namespace Brawl
             text.SetText($"({newState})");
         }
 
-        private void LateUpdate()
+        private void OnDestroy()
         {
-            if (agent == null) return;
-            Vector3 screenPosition = camera.WorldToScreenPoint(agent.UIPosition.position);
-            transform.position = screenPosition;
+            if (agent)
+            {
+                agent.OnStateChange -= OnStateChange;
+                agent.Health.OnDead -= OnAgentDead;
+                agent.Health.OnRespawn -= OnAgentRespawn;
+            }
         }
     }
 }

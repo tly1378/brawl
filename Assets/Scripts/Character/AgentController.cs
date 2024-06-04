@@ -1,25 +1,22 @@
 using UnityEngine;
-using UnityEngine.AI;
 using System;
 using System.Collections.Generic;
+using Brawl.State;
 
 namespace Brawl
 {
-    public class AgentController : MonoBehaviour
+#if UNITY_EDITOR
+    [UnityEditor.CustomEditor(typeof(AgentController))]
+    public class AgentControllerEditor : ControllerEditor { }
+#endif
+
+    public class AgentController : Controller
     {
         public event Action<AgentState> OnStateChange;
         public event Action<string, float, float?> OnAttributeChange;
-        public Transform UIPosition;
         public Transform HealPoint;
-        private NavMeshAgent agent;
-        private Health health;
         private AgentState currentState;
         private readonly Dictionary<string, float> attributes = new();
-
-        public NavMeshAgent Agent => agent;
-        public Health Health => health;
-        public bool IsAlive => health.CurrentHealth > 0;
-        public Transform Target { get; set; }
 
         public void SetAttribute(string name, float value)
         {
@@ -54,16 +51,21 @@ namespace Brawl
             return description;
         }
 
-        private void Awake()
-        {
-            agent = GetComponent<NavMeshAgent>();
-            health = GetComponent<Health>();
-        }
-
         private async void Start()
         {
-            await UIManager.Instance.CreateStateBar(this);
+            Health.OnDead += TransitionToDeadState;
+            await UI.UIManager.Instance.CreateOverheadUI(this);
             TransitionToState(new PatrolState(this));
+        }
+
+        private void TransitionToDeadState(Health _)
+        {
+            TransitionToState(new DeadState(this));
+        }
+
+        private void OnDestroy()
+        {
+            Health.OnDead -= TransitionToDeadState;
         }
 
         private void Update()

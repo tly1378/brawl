@@ -16,12 +16,7 @@ MonoBehaviour:
   m_GUID: 18dcc4256b1c74ec888566682392472d
   m_SerializeEntries:
   - m_GUID: 403838502780843a18dfc25b4aaf39bb
-    m_Address: HPBar
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8f663977b9bbc4c1d83e21e1a83c3a78
-    m_Address: StateBar
+    m_Address: OverheadUI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -5,15 +5,15 @@ namespace Brawl
 {
     public class Health : MonoBehaviour
     {
-        public int factionId; // 阵营编号
-        public Transform UIPosition;
         [SerializeField] private Transform respawnPoint; // 复活点
         private float currentHealth;
 
-        public event Action OnDead;
+        public event Action<Health> OnDead;
         public event Action OnRespawn;
         public event Action OnTakeDamage;
         public event Action OnHPChange;
+
+        public bool IsAlive => currentHealth > 0;
 
         public float CurrentHealth
         {
@@ -27,14 +27,15 @@ namespace Brawl
 
         public float MaxHealth { get; private set; } = 100;
 
-        void Start()
+        private void Start()
         {
             CurrentHealth = MaxHealth;
-            UIManager.Instance.CreateHPBar(this);
         }
 
         public void TakeDamage(float amount)
         {
+            if (!IsAlive) return;
+
             CurrentHealth -= amount;
             OnTakeDamage?.Invoke();
             if (CurrentHealth <= 0)
@@ -49,10 +50,10 @@ namespace Brawl
                 CurrentHealth = Mathf.Clamp(CurrentHealth + amount, 0, MaxHealth);
         }
 
-        void Die()
+        private void Die()
         {
             gameObject.SetActive(false);
-            OnDead?.Invoke();
+            OnDead?.Invoke(this);
         }
 
         public void Respawn()

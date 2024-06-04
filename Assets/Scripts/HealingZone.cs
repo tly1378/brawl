@@ -12,22 +12,22 @@ namespace Brawl
 
         void OnTriggerEnter(Collider other)
         {
-            Health health = other.GetComponent<Health>();
-            if (health != null && !healthTargets.Contains(health))
+            Controller health = other.GetComponent<Controller>();
+            if (health != null && !healthTargets.Contains(health.Health))
             {
                 if (health.factionId == factionId)
                 {
-                    healthTargets.Add(health);
+                    healthTargets.Add(health.Health);
                 }
             }
         }
 
         void OnTriggerExit(Collider other)
         {
-            Health health = other.GetComponent<Health>();
-            if (health != null && healthTargets.Contains(health))
+            Controller health = other.GetComponent<Controller>();
+            if (health != null && healthTargets.Contains(health.Health))
             {
-                healthTargets.Remove(health);
+                healthTargets.Remove(health.Health);
             }
         }
 

@@ -1,4 +1,4 @@
-namespace Brawl
+namespace Brawl.State
 {
     public class AgentState
     {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-namespace Brawl
+namespace Brawl.State
 {
     public class PatrolState : AgentState
     {
@@ -22,9 +22,9 @@ namespace Brawl
 
         public override void UpdateState()
         {
-            if (!agent.IsAlive)
+            if (agent.Health.CurrentHealth < agent.Health.MaxHealth)
             {
-                agent.TransitionToState(new DeadState(agent));
+                agent.TransitionToState(new HealState(agent));
                 return;
             }
 
@@ -41,18 +41,12 @@ namespace Brawl
             for (int i = 0; i < count; i++)
             {
                 Collider hitCollider = hitColliders[i];
-                Health targetHealth = hitCollider.GetComponentInParent<Health>();
-                if (targetHealth != null && targetHealth.factionId != agent.Health.factionId)
+                Controller controller = hitCollider.GetComponent<Controller>();
+                if (controller != null && controller.factionId != agent.factionId)
                 {
-                    agent.Target = hitCollider.transform;
-                    agent.TransitionToState(new ChaseState(agent));
+                    agent.TransitionToState(new ChaseState(agent, controller));
                     break;
                 }
-            }
-
-            if (agent.Health.CurrentHealth < agent.Health.MaxHealth)
-            {
-                agent.TransitionToState(new HealState(agent));
             }
         }
 

@@ -1,15 +1,20 @@
-﻿namespace Brawl
+﻿using UnityEngine;
+
+namespace Brawl.State
 {
     public class ChaseState : AgentState
     {
         private bool hasCheckedEscape;
         private float escapeThreshold = 0.2f;
         private float escapeProbability = 0.5f;
+        protected Controller target;
 
-        public ChaseState(AgentController agent) : base(agent)
+        public ChaseState(AgentController agent, Controller target) : base(agent)
         {
             escapeThreshold = agent.GetAttribute("EscapeThreshold").GetValueOrDefault(escapeThreshold);
             escapeProbability = agent.GetAttribute("EscapeProbability").GetValueOrDefault(escapeProbability);
+            this.target = target;
+            agent.Melee.Target = target.Health;
         }
 
         public override void EnterState()
@@ -26,26 +31,15 @@
 
         public override void UpdateState()
         {
-            if (!agent.IsAlive)
+            if (target == null || !target.Health.IsAlive)
             {
-                agent.TransitionToState(new DeadState(agent));
+                agent.TransitionToState(new PatrolState(agent));
                 return;
             }
 
-            if (agent.Target != null)
+            if (Vector3.Distance(target.transform.position, agent.Agent.destination) > 1)
             {
-                agent.Agent.SetDestination(agent.Target.position);
-
-                Health targetHealth = agent.Target.GetComponent<Health>();
-                if (targetHealth == null || targetHealth.CurrentHealth <= 0)
-                {
-                    agent.Target = null;
-                    agent.TransitionToState(new PatrolState(agent));
-                }
-            }
-            else
-            {
-                agent.TransitionToState(new PatrolState(agent));
+                agent.Agent.SetDestination(target.transform.position);
             }
         }
 
@@ -55,7 +49,7 @@
             {
                 if (!hasCheckedEscape)
                 {
-                    if (UnityEngine.Random.value < escapeProbability)
+                    if (Random.value < escapeProbability)
                     {
                         agent.TransitionToState(new HealState(agent));
                     }

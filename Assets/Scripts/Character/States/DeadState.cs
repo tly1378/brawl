@@ -1,5 +1,5 @@
 ﻿
-namespace Brawl
+namespace Brawl.State
 {
     internal class DeadState : AgentState
     {

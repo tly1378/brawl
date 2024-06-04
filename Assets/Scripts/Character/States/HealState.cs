@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Brawl
+namespace Brawl.State
 {
     public class HealState : AgentState
     {
@@ -17,18 +17,10 @@ namespace Brawl
 
         public override void UpdateState()
         {
-            if (!agent.IsAlive)
+            if (Vector3.Distance(agent.transform.position, agent.HealPoint.position) < HealDistance && agent.Health.CurrentHealth >= agent.Health.MaxHealth)
             {
-                agent.TransitionToState(new DeadState(agent));
+                agent.TransitionToState(new PatrolState(agent));
                 return;
-            }
-
-            if (Vector3.Distance(agent.transform.position, agent.HealPoint.position) < HealDistance)
-            {
-                if (agent.Health.CurrentHealth >= agent.Health.MaxHealth)
-                {
-                    agent.TransitionToState(new PatrolState(agent));
-                }
             }
         }
     }
