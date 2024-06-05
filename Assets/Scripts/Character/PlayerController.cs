@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Brawl
@@ -32,19 +33,30 @@ namespace Brawl
                 }
             }
 
-            // 攻击最近的敌人
-            int count = Physics.OverlapSphereNonAlloc(transform.position, Controller.Melee.attackRange, hitColliders);
-            for (int i = 0; i < count; i++)
+            // 没有目标或目标太远，则寻找新目标
+            if(!Controller.Melee.Target || Vector3.Distance(Controller.Melee.Target.transform.position, transform.position) > Controller.Melee.attackRange)
             {
-                Collider hitCollider = hitColliders[i];
-                Controller target = hitCollider.GetComponent<Controller>();
-                if (target != null && target.FactionId != Controller.FactionId)
+                int count = Physics.OverlapSphereNonAlloc(transform.position, Controller.Melee.attackRange, hitColliders);
+                Controller nearest = null;
+                float minDistance = float.MaxValue;
+                for (int i = 0; i < count; i++)
                 {
-                    if(target.Melee.Target != target.Health)
+                    Collider hitCollider = hitColliders[i];
+                    Controller target = hitCollider.GetComponent<Controller>();
+                    if (target != null && target.FactionId != Controller.FactionId)
                     {
-                        target.Melee.Target = target.Health;
-                        break;
+                        var distance = Vector3.Distance(target.transform.position, transform.position);
+                        if (distance < minDistance)
+                        {
+                            nearest = target;
+                            minDistance = distance;
+                        }
                     }
+                }
+
+                if (nearest)
+                {
+                    Controller.Melee.Target = nearest.Health;
                 }
             }
         }

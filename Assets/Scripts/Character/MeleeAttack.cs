@@ -40,6 +40,7 @@ namespace Brawl
             }
             else
             {
+                Target = null;
                 enabled = false;
             }
         }
