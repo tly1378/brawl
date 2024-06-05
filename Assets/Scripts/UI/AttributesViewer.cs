@@ -10,7 +10,7 @@ namespace Brawl
 
         private void Start()
         {
-            agent.OnAttributeChange += OnAttributeChange;
+            agent.Controller.OnAttributeChange += OnAttributeChange;
         }
 
         private void OnAttributeChange(string name, float value, float? origin)

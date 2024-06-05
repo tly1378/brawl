@@ -12,12 +12,12 @@ namespace Brawl.State
 
         public override void EnterState()
         {
-            agent.Agent.SetDestination(agent.HealPoint.position);
+            agent.Controller.Agent.SetDestination(agent.HealPoint.position);
         }
 
         public override void UpdateState()
         {
-            if (Vector3.Distance(agent.transform.position, agent.HealPoint.position) < HealDistance && agent.Health.CurrentHealth >= agent.Health.MaxHealth)
+            if (Vector3.Distance(agent.transform.position, agent.HealPoint.position) < HealDistance && agent.Controller.Health.CurrentHealth >= agent.Controller.Health.MaxHealth)
             {
                 agent.TransitionToState(new PatrolState(agent));
                 return;

@@ -1,7 +1,7 @@
 using UnityEngine;
 using Newtonsoft.Json.Linq;
 
-namespace Brawl
+namespace Brawl.AI
 {
 #if UNITY_EDITOR
     [UnityEditor.CustomEditor(typeof(AIAdjuster))]
@@ -26,18 +26,18 @@ namespace Brawl
 
         public async void RequestForAdjustment()
         {
-            var text = await OpenAIRequest.CallChatGPT(message, agent.ShowAttributes());
+            var text = await OpenAIRequest.CallChatGPT(message, agent.Controller.ShowAttributes());
             var response = JObject.Parse(text);
             Debug.Log(response);
             string arguments = (string)response["choices"][0]["message"]["tool_calls"][0]["function"]["arguments"];
             var json = JObject.Parse(arguments);
             if (json.TryGetValue("EscapeThreshold", out var threshold))
             {
-                agent.SetAttribute("EscapeThreshold", (float)threshold);
+                agent.Controller.SetAttribute("EscapeThreshold", (float)threshold);
             }
             if (json.TryGetValue("EscapeProbability", out var probability))
             {
-                agent.SetAttribute("EscapeProbability", (float)probability);
+                agent.Controller.SetAttribute("EscapeProbability", (float)probability);
             }
         }
     }

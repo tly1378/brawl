@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
-namespace Brawl
+namespace Brawl.AI
 {
     public static class OpenAIRequest
     {

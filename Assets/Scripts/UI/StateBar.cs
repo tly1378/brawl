@@ -13,8 +13,8 @@ namespace Brawl
         {
             this.agent = agent;
             agent.OnStateChange += OnStateChange;
-            agent.Health.OnDead += OnAgentDead;
-            agent.Health.OnRespawn += OnAgentRespawn;
+            agent.Controller.Health.OnDead += OnAgentDead;
+            agent.Controller.Health.OnRespawn += OnAgentRespawn;
         }
 
         public void Set(string text)
@@ -42,8 +42,8 @@ namespace Brawl
             if (agent)
             {
                 agent.OnStateChange -= OnStateChange;
-                agent.Health.OnDead -= OnAgentDead;
-                agent.Health.OnRespawn -= OnAgentRespawn;
+                agent.Controller.Health.OnDead -= OnAgentDead;
+                agent.Controller.Health.OnRespawn -= OnAgentRespawn;
             }
         }
     }

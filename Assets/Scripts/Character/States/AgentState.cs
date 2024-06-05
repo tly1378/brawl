@@ -1,6 +1,6 @@
 namespace Brawl.State
 {
-    public class AgentState
+    public abstract class AgentState
     {
         protected readonly AgentController agent;
         public AgentState(AgentController agent) => this.agent = agent;

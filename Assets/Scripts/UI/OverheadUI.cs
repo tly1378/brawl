@@ -25,18 +25,18 @@ namespace Brawl.UI
 
         internal void Set(AgentController agent)
         {
-            target = agent.UIPosition;
+            target = agent.Controller.UIPosition;
             stateBar.Set(agent);
-            hpBar.Set(agent.Health);
-            textBox.Set(agent);
+            hpBar.Set(agent.Controller.Health);
+            textBox.Set(agent.Controller);
         }
 
         internal void Set(PlayerController player)
         {
-            target = player.UIPosition;
+            target = player.Controller.UIPosition;
             stateBar.gameObject.SetActive(false);
-            hpBar.Set(player.Health);
-            textBox.Set(player);
+            hpBar.Set(player.Controller.Health);
+            textBox.Set(player.Controller);
         }
     }
 }

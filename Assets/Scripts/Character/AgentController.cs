@@ -1,60 +1,29 @@
 using UnityEngine;
 using System;
-using System.Collections.Generic;
 using Brawl.State;
 
 namespace Brawl
 {
-#if UNITY_EDITOR
-    [UnityEditor.CustomEditor(typeof(AgentController))]
-    public class AgentControllerEditor : ControllerEditor { }
-#endif
-
-    public class AgentController : Controller
+    [RequireComponent(typeof(Controller))]
+    public class AgentController : MonoBehaviour
     {
         public event Action<AgentState> OnStateChange;
-        public event Action<string, float, float?> OnAttributeChange;
+        
         public Transform HealPoint;
+        
         private AgentState currentState;
-        private readonly Dictionary<string, float> attributes = new();
 
-        public void SetAttribute(string name, float value)
-        {
-            if (attributes.TryGetValue(name, out var origin))
-            {
-                attributes[name] = value;
-                OnAttributeChange?.Invoke(name, value, origin);
-            }
-            else
-            {
-                attributes[name] = value;
-                OnAttributeChange?.Invoke(name, value, null);
-            }
-        }
+        public Controller Controller { get; private set; }
 
-        public float? GetAttribute(string name)
+        private void Awake()
         {
-            if (attributes.TryGetValue(name, out var value))
-            {
-                return value;
-            }
-            return null;
-        }
-
-        public string ShowAttributes()
-        {
-            string description = "";
-            foreach (var attr in attributes)
-            {
-                description += attr.Key + "=" + attr.Value + "\n";
-            }
-            return description;
+            Controller = GetComponent<Controller>();
         }
 
         private async void Start()
         {
-            Health.OnDead += TransitionToDeadState;
             await UI.UIManager.Instance.CreateOverheadUI(this);
+            Controller.Health.OnDead += TransitionToDeadState;
             TransitionToState(new PatrolState(this));
         }
 
@@ -65,7 +34,7 @@ namespace Brawl
 
         private void OnDestroy()
         {
-            Health.OnDead -= TransitionToDeadState;
+            Controller.Health.OnDead -= TransitionToDeadState;
         }
 
         private void Update()
@@ -77,7 +46,7 @@ namespace Brawl
         {
             currentState?.ExitState();
             currentState = newState;
-            currentState.EnterState();
+            currentState?.EnterState();
             OnStateChange?.Invoke(currentState);
         }
 

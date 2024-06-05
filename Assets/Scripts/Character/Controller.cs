@@ -1,48 +1,69 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace Brawl
 {
-#if UNITY_EDITOR
-    [UnityEditor.CustomEditor(typeof(Controller))]
-    public class ControllerEditor : UnityEditor.Editor
-    {
-        private string textFieldValue = string.Empty;
-
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-
-            textFieldValue = UnityEditor.EditorGUILayout.TextField("对话框", textFieldValue);
-            if (GUILayout.Button("发送"))
-            {
-                ((Controller)target).OnSpeak?.Invoke(textFieldValue);
-            }
-        }
-    }
-#endif
-
     [RequireComponent(typeof(Health), typeof(NavMeshAgent), typeof(MeleeAttack))]
     public class Controller : MonoBehaviour
     {
         public Action<string> OnSpeak;
         public Transform UIPosition;
-        public int factionId;
+        [SerializeField] private int factionId;
+        private readonly Dictionary<string, float> attributes = new();
         private Health health;
         private MeleeAttack melee;
         private NavMeshAgent agent;
 
+        public event Action<string, float, float?> OnAttributeChange;
+
         public Health Health => health;
         public MeleeAttack Melee => melee;
         public NavMeshAgent Agent => agent;
+        public int FactionId => factionId;
 
-        protected virtual void Awake()
+        public float? GetAttribute(string name)
+        {
+            if (attributes.TryGetValue(name, out var value))
+            {
+                return value;
+            }
+            return null;
+        }
+
+        public void SetAttribute(string name, float value)
+        {
+            if (attributes.TryGetValue(name, out var origin))
+            {
+                attributes[name] = value;
+                OnAttributeChange?.Invoke(name, value, origin);
+            }
+            else
+            {
+                attributes[name] = value;
+                OnAttributeChange?.Invoke(name, value, null);
+            }
+        }
+
+        public string ShowAttributes()
+        {
+            string description = "";
+            foreach (var attr in attributes)
+            {
+                description += attr.Key + "=" + attr.Value + "\n";
+            }
+            return description;
+        }
+
+        private void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
             health = GetComponent<Health>();
             melee = GetComponent<MeleeAttack>();
-            melee.factionId = factionId;            
+            melee.factionId = FactionId;
         }
     }
 }

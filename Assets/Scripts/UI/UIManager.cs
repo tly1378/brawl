@@ -23,12 +23,5 @@ namespace Brawl.UI
             var overheadUI = overheadUIGO.GetComponent<OverheadUI>();
             overheadUI.Set(agent);
         }
-
-        internal async Task CreateOverheadUI(PlayerController player)
-        {
-            var overheadUIGO = await Addressables.InstantiateAsync("OverheadUI", transform);
-            var overheadUI = overheadUIGO.GetComponent<OverheadUI>();
-            overheadUI.Set(player);
-        }
     }
 }

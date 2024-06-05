@@ -2,18 +2,19 @@ using UnityEngine;
 
 namespace Brawl
 {
-#if UNITY_EDITOR
-    [UnityEditor.CustomEditor(typeof(PlayerController))]
-    public class PlayerControllerEditor : ControllerEditor { }
-#endif
-
-    public class PlayerController : Controller
+    [RequireComponent(typeof(Controller))]
+    public class PlayerController : MonoBehaviour
     {
         private readonly Collider[] hitColliders = new Collider[5];
 
-        private async void Start()
+        public static PlayerController Player { get; private set; }
+
+        public Controller Controller { get; private set; }
+
+        private void Awake()
         {
-            await UI.UIManager.Instance.CreateOverheadUI(this);
+            Player = this;
+            Controller = GetComponent<Controller>();
         }
 
         void Update()
@@ -23,21 +24,25 @@ namespace Brawl
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out RaycastHit hit))
                 {
-                    Agent.SetDestination(hit.point);
+                    Controller.Agent.SetDestination(hit.point);
+                    if (TryGetComponent<AgentController>(out var agent))
+                    {
+                        agent.TransitionToState(new State.PlayerState(agent));
+                    }
                 }
             }
 
             // 攻击最近的敌人
-            int count = Physics.OverlapSphereNonAlloc(transform.position, Melee.attackRange, hitColliders);
+            int count = Physics.OverlapSphereNonAlloc(transform.position, Controller.Melee.attackRange, hitColliders);
             for (int i = 0; i < count; i++)
             {
                 Collider hitCollider = hitColliders[i];
-                Controller controller = hitCollider.GetComponent<Controller>();
-                if (controller != null && controller.factionId != factionId)
+                Controller target = hitCollider.GetComponent<Controller>();
+                if (target != null && target.FactionId != Controller.FactionId)
                 {
-                    if(Melee.Target != controller.Health)
+                    if(target.Melee.Target != target.Health)
                     {
-                        Melee.Target = controller.Health;
+                        target.Melee.Target = target.Health;
                         break;
                     }
                 }

@@ -15,7 +15,7 @@ namespace Brawl
             Controller health = other.GetComponent<Controller>();
             if (health != null && !healthTargets.Contains(health.Health))
             {
-                if (health.factionId == factionId)
+                if (health.FactionId == factionId)
                 {
                     healthTargets.Add(health.Health);
                 }

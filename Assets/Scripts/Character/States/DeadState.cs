@@ -9,12 +9,12 @@ namespace Brawl.State
 
         public override void EnterState()
         {
-            agent.Health.OnRespawn += OnRespawn;
+            agent.Controller.Health.OnRespawn += OnRespawn;
         }
 
         public override void ExitState()
         {
-            agent.Health.OnRespawn -= OnRespawn;
+            agent.Controller.Health.OnRespawn -= OnRespawn;
         }
 
         private void OnRespawn()
