@@ -20,6 +20,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5c755f9bc5253ea418e919994537dcc7
+    m_Address: CFXR Hit A (Red)
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e1e9506f5904a64b81744324fb7cd50
+    m_Address: CFXR2 WW Explosion
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 88d70f80922504c5e83e5f36a38a6159, type: 2}
   m_SchemaSet:

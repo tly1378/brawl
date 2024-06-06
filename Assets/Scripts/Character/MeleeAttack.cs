@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace Brawl
 {
@@ -49,6 +50,8 @@ namespace Brawl
         {
             health.TakeDamage(attackDamage);
             lastAttackTime = Time.time;
+
+            Addressables.InstantiateAsync("CFXR Hit A (Red)", health.transform.position + Vector3.up, Quaternion.identity, health.transform);
         }
 
         // 可视化攻击范围

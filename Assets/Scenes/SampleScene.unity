@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 46228409}
   - component: {fileID: 46228407}
   - component: {fileID: 46228408}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Agent(Partner)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -698,7 +698,7 @@ GameObject:
   - component: {fileID: 347287972}
   - component: {fileID: 347287971}
   - component: {fileID: 347287970}
-  m_Layer: 0
+  m_Layer: 25
   m_Name: HealingZone_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1256,7 +1256,7 @@ GameObject:
   - component: {fileID: 469876658}
   - component: {fileID: 469876657}
   - component: {fileID: 469876661}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1398,7 +1398,7 @@ GameObject:
   - component: {fileID: 485268130}
   - component: {fileID: 485268134}
   - component: {fileID: 485268133}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Agent(Faction)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1534,7 +1534,7 @@ GameObject:
   - component: {fileID: 491608202}
   - component: {fileID: 491608205}
   - component: {fileID: 491608204}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Agent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1820,7 +1820,7 @@ GameObject:
   - component: {fileID: 839902124}
   - component: {fileID: 839902123}
   - component: {fileID: 839902122}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Agent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1912,7 +1912,7 @@ GameObject:
   - component: {fileID: 896817376}
   - component: {fileID: 896817370}
   - component: {fileID: 896817377}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Agent(Player)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2181,7 +2181,7 @@ GameObject:
   - component: {fileID: 1144600280}
   - component: {fileID: 1144600282}
   - component: {fileID: 1144600281}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Agent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2672,7 +2672,7 @@ GameObject:
   - component: {fileID: 1449747756}
   - component: {fileID: 1449747755}
   - component: {fileID: 1449747754}
-  m_Layer: 0
+  m_Layer: 25
   m_Name: HealingZone_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2926,7 +2926,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1722981532}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2957,7 +2957,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1968917026}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3096,7 +3096,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2128278174}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
