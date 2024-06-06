@@ -8,7 +8,7 @@ namespace Brawl.State
 
         public HealState(AgentController agent) : base(agent)
         {
-            updateChecker.Add(CheckHPFull);
+            OnUpdateState += CheckHPFull;
         }
 
         public override void EnterState()

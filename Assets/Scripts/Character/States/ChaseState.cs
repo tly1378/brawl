@@ -2,12 +2,12 @@
 
 namespace Brawl.State
 {
-    public class ChaseState : AgentState
+    public abstract class ChaseState : AgentState
     {
         private bool hasCheckedEscape;
         [SerializeField] private float escapeThreshold = 0.2f;
         [SerializeField] private float escapeProbability = 0.5f;
-        private readonly Controller target;
+        protected readonly Controller target;
         private readonly float range;
         private readonly Vector3 originalPosition;
 
@@ -19,8 +19,8 @@ namespace Brawl.State
             this.target = target;
             agent.Controller.Attack.Target = target.Health;
             originalPosition = agent.transform.position;
-            updateChecker.Add(CheckEnemyAlive);
-            updateChecker.Add(CheckOverRange);
+            OnUpdateState += CheckEnemyAlive;
+            OnUpdateState += CheckOverRange;
         }
 
         public override void EnterState()
@@ -65,49 +65,6 @@ namespace Brawl.State
             }
             return null;
         }
-
-        // 定义近战和远程攻击的距离阈值
-        float meleeAttackRange = 1.0f;
-        float rangedAttackDistance = 10.0f;
-
-        public override void UpdateState()
-        {
-            base.UpdateState();
-
-            // 获取目标和代理的位置
-            Vector3 targetPosition = target.transform.position;
-            Vector3 agentPosition = Agent.Controller.Agent.destination;
-
-            if (Agent.isMelee)
-            {
-                // 近战：如果距离大于近战攻击范围，继续接近目标
-                if (Vector3.Distance(targetPosition, agentPosition) > meleeAttackRange)
-                {
-                    Agent.Controller.Agent.SetDestination(targetPosition);
-                }
-            }
-            else
-            {
-                // 远程：保持在适当的攻击距离
-                float distanceToTarget = Vector3.Distance(targetPosition, agentPosition);
-
-                if (distanceToTarget > rangedAttackDistance)
-                {
-                    // 距离太远，靠近目标
-                    Vector3 direction = (agentPosition - targetPosition).normalized;
-                    Vector3 newPosition = targetPosition + direction * rangedAttackDistance;
-                    Agent.Controller.Agent.SetDestination(newPosition);
-                }
-                else if (distanceToTarget < rangedAttackDistance * 0.5f)
-                {
-                    // 距离太近，远离目标
-                    Vector3 direction = (agentPosition - targetPosition).normalized;
-                    Vector3 newPosition = targetPosition + direction * rangedAttackDistance;
-                    Agent.Controller.Agent.SetDestination(newPosition);
-                }
-            }
-        }
-
 
         private void HandleTakeDamage()
         {

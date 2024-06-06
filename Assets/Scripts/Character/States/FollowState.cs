@@ -14,7 +14,7 @@ namespace Brawl.State
         {
             this.target = target;
             maxChaseRange = agent.Controller.GetAttribute("MaxChaseRange") ?? 10f;
-            updateChecker.Add(CheckEnemyToChase);
+            OnUpdateState += CheckEnemyToChase;
         }
 
         private static AgentState CheckEnemyToChase(AgentState currentState)
@@ -32,7 +32,7 @@ namespace Brawl.State
                 Controller controller = hitCollider.GetComponent<Controller>();
                 if (controller != null && controller.FactionId != currentState.Agent.Controller.FactionId)
                 {
-                    return new ChaseState(followState.Agent, controller, followState.maxChaseRange);
+                    return new MeleeChaseState(followState.Agent, controller, followState.maxChaseRange);
                 }
             }
             return null;

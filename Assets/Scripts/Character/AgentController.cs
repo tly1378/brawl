@@ -15,7 +15,7 @@ namespace Brawl
 
         public Controller Controller { get; private set; }
 
-        public bool isMelee = true;
+        public bool IsMelee { get; private set; }
 
         private void Awake()
         {
@@ -27,6 +27,7 @@ namespace Brawl
             await UI.UIManager.Instance.CreateOverheadUI(this);
             Controller.Health.OnDead += TransitionToDeadState;
             TransitionToState(new PatrolState(this));
+            IsMelee = Controller.Attack is MeleeAttack;
         }
 
         private void TransitionToDeadState(Health _)

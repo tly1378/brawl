@@ -11,15 +11,25 @@ namespace Brawl.State
 
         public delegate AgentState StateChecker(AgentState state);
 
-        public readonly List<StateChecker> updateChecker = new();
+        public event StateChecker OnUpdateState;
 
         public virtual void EnterState() { }
 
-        public virtual void UpdateState() 
+        public virtual void UpdateState()
         {
-            foreach (var checker in updateChecker)
+            if (OnUpdateState != null)
             {
-                Agent.TransitionToState(checker(this));
+                var invocationList = OnUpdateState.GetInvocationList();
+                for (int i = 0; i < invocationList.Length; i++)
+                {
+                    var method = (StateChecker)invocationList[i];
+                    var result = method.Invoke(this);
+                    if (result != null)
+                    {
+                        Agent.TransitionToState(result);
+                        return;
+                    }
+                }
             }
         }
 

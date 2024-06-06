@@ -19,8 +19,8 @@ namespace Brawl.State
             wanderRadius = agent.Controller.GetAttribute("WanderRadius") ?? 10f;
             maxChaseRange = agent.Controller.GetAttribute("MaxChaseRange") ?? 15f;
 
-            updateChecker.Add(CheckHPToHeal);
-            updateChecker.Add(CheckEnemyToChase);
+            OnUpdateState += CheckHPToHeal;
+            OnUpdateState += CheckEnemyToChase;
         }
 
         public override void EnterState()
@@ -53,7 +53,9 @@ namespace Brawl.State
                 Controller controller = hitCollider.GetComponent<Controller>();
                 if (controller != null && controller.FactionId != currentState.Agent.Controller.FactionId)
                 {
-                    return new ChaseState(patrolState.Agent, controller, patrolState.maxChaseRange);
+                    return currentState.Agent.IsMelee
+                        ? new MeleeChaseState(patrolState.Agent, controller, patrolState.maxChaseRange)
+                        : new RangedChaseState(patrolState.Agent, controller, patrolState.maxChaseRange);
                 }
             }
             return null;
@@ -62,7 +64,7 @@ namespace Brawl.State
         public override void UpdateState()
         {
             base.UpdateState();
-            if(wanderRadius > 0)
+            if (wanderRadius > 0)
             {
                 wanderTimer += Time.deltaTime;
                 if (wanderTimer >= WanderInterval)
