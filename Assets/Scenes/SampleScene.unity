@@ -274,7 +274,6 @@ MonoBehaviour:
   attackRange: 10
   attackDamage: 10
   attackCooldown: 1
-  projectileSpeed: 20
 --- !u!1 &169965215
 GameObject:
   m_ObjectHideFlags: 0
@@ -1416,7 +1415,7 @@ Transform:
   m_GameObject: {fileID: 485268126}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.78, y: 10.114332, z: 21.3}
+  m_LocalPosition: {x: 4.39, y: 10.114332, z: 10.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

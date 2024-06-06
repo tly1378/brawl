@@ -6,7 +6,6 @@ namespace Brawl
 {
     public class RangedAttack : Attack
     {
-        public float projectileSpeed = 20f;
 
         private void Update()
         {
@@ -37,19 +36,12 @@ namespace Brawl
             lastAttackTime = Time.time;
 
             // 创建投掷物
-            GameObject projectile = await Addressables.InstantiateAsync("Bomb", transform.position + Vector3.up, Quaternion.identity);
-
-            // 计算投掷方向并应用力
-            if (projectile.TryGetComponent<Rigidbody>(out var rb))
-            {
-                Vector3 direction = (health.transform.position - transform.position).normalized;
-                rb.linearVelocity = direction * projectileSpeed;
-            }
+            GameObject projectile = await Addressables.InstantiateAsync("Bomb", transform.position + Vector3.up * 2, Quaternion.identity);
 
             // 设置投掷物的伤害
             if (projectile.TryGetComponent<Projectile>(out var projectileScript))
             {
-                projectileScript.SetDamage(attackDamage);
+                projectileScript.SetDamage(attackDamage, health.transform);
             }
         }
 
