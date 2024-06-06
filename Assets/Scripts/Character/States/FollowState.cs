@@ -8,29 +8,43 @@ namespace Brawl.State
         public const float FollowingDistance = 2f;        
         private readonly Collider[] hitColliders = new Collider[5];
         private readonly Transform target;
+        private readonly float maxChaseRange;
 
         public FollowState(AgentController agent, Transform target) : base(agent)
         {
             this.target = target;
+            maxChaseRange = agent.Controller.GetAttribute("MaxChaseRange") ?? 10f;
+            updateChecker.Add(CheckEnemyToChase);
+        }
+
+        private static AgentState CheckEnemyToChase(AgentState currentState)
+        {
+            if (currentState is not FollowState followState)
+            {
+                Debug.LogError("CheckEnemy can only work during PatrolState.");
+                return null;
+            }
+
+            int count = Physics.OverlapSphereNonAlloc(currentState.Agent.transform.position, Mathf.Min(followState.maxChaseRange, ViewRadius), followState.hitColliders);
+            for (int i = 0; i < count; i++)
+            {
+                Collider hitCollider = followState.hitColliders[i];
+                Controller controller = hitCollider.GetComponent<Controller>();
+                if (controller != null && controller.FactionId != currentState.Agent.Controller.FactionId)
+                {
+                    return new ChaseState(followState.Agent, controller, followState.maxChaseRange);
+                }
+            }
+            return null;
         }
 
         public override void UpdateState()
         {
-            if (Vector3.Distance(target.position, agent.Controller.Agent.destination) > FollowingDistance)
-            {
-                agent.Controller.Agent.SetDestination(target.position);
-            }
+            base.UpdateState();
 
-            int count = Physics.OverlapSphereNonAlloc(agent.transform.position, ViewRadius, hitColliders);
-            for (int i = 0; i < count; i++)
+            if (Vector3.Distance(target.position, Agent.Controller.Agent.destination) > FollowingDistance)
             {
-                Collider hitCollider = hitColliders[i];
-                Controller target = hitCollider.GetComponent<Controller>();
-                if (target != null && target.FactionId != agent.Controller.FactionId)
-                {
-                    agent.TransitionToState(new ChaseState(agent, target));
-                    break;
-                }
+                Agent.Controller.Agent.SetDestination(target.position);
             }
         }
     }

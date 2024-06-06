@@ -1,10 +1,13 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace Brawl
 {
-    public class MeleeAttack : Attack
+    public class RangedAttack : Attack
     {
+        public float projectileSpeed = 20f;
+
         private void Update()
         {
             if (Time.time >= lastAttackTime + attackCooldown)
@@ -29,19 +32,33 @@ namespace Brawl
             }
         }
 
-        private void Attack(Health health)
+        private async void Attack(Health health)
         {
-            health.TakeDamage(attackDamage);
             lastAttackTime = Time.time;
 
-            Addressables.InstantiateAsync("CFXR Hit A (Red)", health.transform.position + Vector3.up, Quaternion.identity, health.transform);
+            // 创建投掷物
+            GameObject projectile = await Addressables.InstantiateAsync("Bomb", transform.position + Vector3.up, Quaternion.identity);
+
+            // 计算投掷方向并应用力
+            if (projectile.TryGetComponent<Rigidbody>(out var rb))
+            {
+                Vector3 direction = (health.transform.position - transform.position).normalized;
+                rb.linearVelocity = direction * projectileSpeed;
+            }
+
+            // 设置投掷物的伤害
+            if (projectile.TryGetComponent<Projectile>(out var projectileScript))
+            {
+                projectileScript.SetDamage(attackDamage);
+            }
         }
 
         // 可视化攻击范围
         private void OnDrawGizmosSelected()
         {
-            Gizmos.color = Color.red;
+            Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, attackRange);
         }
     }
 }
+

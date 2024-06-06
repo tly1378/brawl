@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace Brawl
 {
-    [RequireComponent(typeof(Health), typeof(NavMeshAgent), typeof(MeleeAttack))]
+    [RequireComponent(typeof(Health), typeof(NavMeshAgent), typeof(Attack))]
     public class Controller : MonoBehaviour
     {
         public Action<string> OnSpeak;
@@ -15,13 +13,13 @@ namespace Brawl
         [SerializeField] private int factionId;
         private readonly Dictionary<string, float> attributes = new();
         private Health health;
-        private MeleeAttack melee;
+        private Attack attack;
         private NavMeshAgent agent;
 
         public event Action<string, float, float?> OnAttributeChange;
 
         public Health Health => health;
-        public MeleeAttack Melee => melee;
+        public Attack Attack => attack;
         public NavMeshAgent Agent => agent;
         public int FactionId => factionId;
 
@@ -62,8 +60,8 @@ namespace Brawl
         {
             agent = GetComponent<NavMeshAgent>();
             health = GetComponent<Health>();
-            melee = GetComponent<MeleeAttack>();
-            melee.factionId = FactionId;
+            attack = GetComponent<Attack>();
+            attack.factionId = FactionId;
         }
     }
 }

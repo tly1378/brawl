@@ -15,6 +15,8 @@ namespace Brawl
 
         public Controller Controller { get; private set; }
 
+        public bool isMelee = true;
+
         private void Awake()
         {
             Controller = GetComponent<Controller>();
@@ -44,9 +46,12 @@ namespace Brawl
 
         public void TransitionToState(AgentState newState)
         {
+            if (newState == null)
+                return;
+
             currentState?.ExitState();
             currentState = newState;
-            currentState?.EnterState();
+            currentState.EnterState();
             OnStateChange?.Invoke(currentState);
         }
 

@@ -8,20 +8,22 @@ namespace Brawl.State
 
         public HealState(AgentController agent) : base(agent)
         {
+            updateChecker.Add(CheckHPFull);
         }
 
         public override void EnterState()
         {
-            agent.Controller.Agent.SetDestination(agent.HealPoint.position);
+            Agent.Controller.Agent.SetDestination(Agent.HealPoint.position);
         }
 
-        public override void UpdateState()
+        private static AgentState CheckHPFull(AgentState currentState)
         {
-            if (Vector3.Distance(agent.transform.position, agent.HealPoint.position) < HealDistance && agent.Controller.Health.CurrentHealth >= agent.Controller.Health.MaxHealth)
+            var distance = Vector3.Distance(currentState.Agent.transform.position, currentState.Agent.HealPoint.position);
+            if (distance < HealDistance && currentState.Agent.Controller.Health.CurrentHealth >= currentState.Agent.Controller.Health.MaxHealth)
             {
-                agent.TransitionToState(new PatrolState(agent));
-                return;
+                return new PatrolState(currentState.Agent);
             }
+            return null;
         }
     }
 }

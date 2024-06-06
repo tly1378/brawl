@@ -17,44 +17,60 @@ namespace Brawl.State
         {
             originalPosition = agent.transform.position;
             wanderRadius = agent.Controller.GetAttribute("WanderRadius") ?? 10f;
-            maxChaseRange = agent.Controller.GetAttribute("MaxChaseRange") ?? 10f;
+            maxChaseRange = agent.Controller.GetAttribute("MaxChaseRange") ?? 15f;
+
+            updateChecker.Add(CheckHPToHeal);
+            updateChecker.Add(CheckEnemyToChase);
         }
 
         public override void EnterState()
         {
             wanderTimer = WanderInterval;
-            agent.Controller.OnAttributeChange += HandleAttributeChange;
+            Agent.Controller.OnAttributeChange += HandleAttributeChange;
+        }
+
+        private static AgentState CheckHPToHeal(AgentState currentState)
+        {
+            if (currentState.Agent.Controller.Health.CurrentHealth < currentState.Agent.Controller.Health.MaxHealth)
+            {
+                return new HealState(currentState.Agent);
+            }
+            return null;
+        }
+
+        private static AgentState CheckEnemyToChase(AgentState currentState)
+        {
+            if (currentState is not PatrolState patrolState)
+            {
+                Debug.LogError("CheckEnemy can only work during PatrolState.");
+                return null;
+            }
+
+            int count = Physics.OverlapSphereNonAlloc(currentState.Agent.transform.position, Mathf.Min(patrolState.maxChaseRange, ViewRadius), patrolState.hitColliders);
+            for (int i = 0; i < count; i++)
+            {
+                Collider hitCollider = patrolState.hitColliders[i];
+                Controller controller = hitCollider.GetComponent<Controller>();
+                if (controller != null && controller.FactionId != currentState.Agent.Controller.FactionId)
+                {
+                    return new ChaseState(patrolState.Agent, controller, patrolState.maxChaseRange);
+                }
+            }
+            return null;
         }
 
         public override void UpdateState()
         {
-            if (agent.Controller.Health.CurrentHealth < agent.Controller.Health.MaxHealth)
-            {
-                agent.TransitionToState(new HealState(agent));
-                return;
-            }
-
-            int count = Physics.OverlapSphereNonAlloc(agent.transform.position, Mathf.Min(maxChaseRange, ViewRadius), hitColliders);
-            for (int i = 0; i < count; i++)
-            {
-                Collider hitCollider = hitColliders[i];
-                Controller controller = hitCollider.GetComponent<Controller>();
-                if (controller != null && controller.FactionId != agent.Controller.FactionId)
-                {
-                    agent.TransitionToState(new ChaseState(agent, controller, maxChaseRange));
-                    return;
-                }
-            }
-
+            base.UpdateState();
             if(wanderRadius > 0)
             {
                 wanderTimer += Time.deltaTime;
                 if (wanderTimer >= WanderInterval)
                 {
-                    if (Vector3.Distance(agent.Controller.Agent.destination, agent.transform.position) < 1f)
+                    if (Vector3.Distance(Agent.Controller.Agent.destination, Agent.transform.position) < 1f)
                     {
                         Vector3 newPos = RandomNavSphere(originalPosition, wanderRadius);
-                        agent.Controller.Agent.SetDestination(newPos);
+                        Agent.Controller.Agent.SetDestination(newPos);
                         wanderTimer = 0;
                     }
                 }
@@ -63,7 +79,7 @@ namespace Brawl.State
 
         public override void ExitState()
         {
-            agent.Controller.OnAttributeChange -= HandleAttributeChange;
+            Agent.Controller.OnAttributeChange -= HandleAttributeChange;
         }
 
         private static Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask = -1)

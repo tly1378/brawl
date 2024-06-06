@@ -19,7 +19,7 @@ namespace Brawl
 
         public void Set(string text)
         {
-            this.text.SetText($"({text})");
+            this.text.SetText(text);
         }
 
         private void OnAgentRespawn()
@@ -34,7 +34,7 @@ namespace Brawl
 
         private void OnStateChange(AgentState newState)
         {
-            text.SetText($"({newState})");
+            text.SetText(newState.ToString());
         }
 
         private void OnDestroy()

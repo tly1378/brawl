@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 46228403}
   - component: {fileID: 46228406}
   - component: {fileID: 46228399}
-  - component: {fileID: 46228400}
+  - component: {fileID: 46228410}
   - component: {fileID: 46228409}
   - component: {fileID: 46228407}
   - component: {fileID: 46228408}
@@ -155,22 +155,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   respawnPoint: {fileID: 1449747753}
---- !u!114 &46228400
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 46228398}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a317e36175274040af344684de73ffd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackRange: 2
-  attackDamage: 10
-  attackCooldown: 1
-  factionId: 0
 --- !u!195 &46228403
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -246,6 +230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HealPoint: {fileID: 1449747753}
+  isMelee: 0
 --- !u!114 &46228408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,6 +258,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UIPosition: {fileID: 1968917026}
   factionId: 0
+--- !u!114 &46228410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46228398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 684367fe967c6904889069fa87599f83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  factionId: 0
+  attackRange: 10
+  attackDamage: 10
+  attackCooldown: 1
+  projectileSpeed: 20
 --- !u!1 &169965215
 GameObject:
   m_ObjectHideFlags: 0
@@ -1414,7 +1416,7 @@ Transform:
   m_GameObject: {fileID: 485268126}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 11.82, y: 10.114332, z: -9.19}
+  m_LocalPosition: {x: 6.78, y: 10.114332, z: 21.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1470,10 +1472,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a317e36175274040af344684de73ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  factionId: 1
   attackRange: 2
   attackDamage: 10
   attackCooldown: 1
-  factionId: 1
 --- !u!195 &485268132
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1509,6 +1511,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HealPoint: {fileID: 347287969}
+  isMelee: 1
 --- !u!114 &485268134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1995,10 +1998,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a317e36175274040af344684de73ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  factionId: 0
   attackRange: 2
   attackDamage: 10
   attackCooldown: 1
-  factionId: 0
 --- !u!136 &896817375
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2035,6 +2038,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HealPoint: {fileID: 1449747753}
+  isMelee: 1
 --- !u!114 &896817377
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -34,9 +34,9 @@ namespace Brawl
             }
 
             // 没有目标或目标太远，则寻找新目标
-            if(!Controller.Melee.Target || Vector3.Distance(Controller.Melee.Target.transform.position, transform.position) > Controller.Melee.attackRange)
+            if(!Controller.Attack.Target || Vector3.Distance(Controller.Attack.Target.transform.position, transform.position) > Controller.Attack.attackRange)
             {
-                int count = Physics.OverlapSphereNonAlloc(transform.position, Controller.Melee.attackRange, hitColliders);
+                int count = Physics.OverlapSphereNonAlloc(transform.position, Controller.Attack.attackRange, hitColliders);
                 Controller nearest = null;
                 float minDistance = float.MaxValue;
                 for (int i = 0; i < count; i++)
@@ -56,7 +56,7 @@ namespace Brawl
 
                 if (nearest)
                 {
-                    Controller.Melee.Target = nearest.Health;
+                    Controller.Attack.Target = nearest.Health;
                 }
             }
         }
