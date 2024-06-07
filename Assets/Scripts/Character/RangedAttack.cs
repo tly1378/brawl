@@ -48,7 +48,7 @@ namespace Brawl
         // 可视化攻击范围
         private void OnDrawGizmosSelected()
         {
-            Gizmos.color = Color.blue;
+            Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, attackRange);
         }
     }
