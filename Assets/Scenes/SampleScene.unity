@@ -255,8 +255,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c16d1c4fc35d22943b461b87af57e574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UIPosition: {fileID: 1968917026}
   factionId: 0
+  uiPosition: {fileID: 1968917026}
 --- !u!114 &46228410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1520,8 +1520,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c16d1c4fc35d22943b461b87af57e574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UIPosition: {fileID: 2128278174}
   factionId: 1
+  uiPosition: {fileID: 2128278174}
 --- !u!1 &491608201
 GameObject:
   m_ObjectHideFlags: 0
@@ -1815,8 +1815,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c16d1c4fc35d22943b461b87af57e574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UIPosition: {fileID: 1652913786}
   factionId: 1
+  uiPosition: {fileID: 1652913786}
 --- !u!114 &718587649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2297,8 +2297,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c16d1c4fc35d22943b461b87af57e574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UIPosition: {fileID: 1722981532}
   factionId: 0
+  uiPosition: {fileID: 1722981532}
 --- !u!1 &1108643057
 GameObject:
   m_ObjectHideFlags: 0

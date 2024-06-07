@@ -37,7 +37,6 @@ namespace Brawl.AI
         {
             ECA.ECA.SetMethods(ECA.ECAMap.sMethods);
             Session.Invoke = ECA.ECA.Invoke;
-            Session.API_KEY = "sk-proj-tzMHHZdwzWqvLAPlv8T7T3BlbkFJD8oQ3sIiyfRTGx6rleym";
             Session.onLog = Log;
 
             var adjEscapeFunction = Session.CreateFunction("AdjEscape", "Adjusts the escape behavior parameters for the controller based on the given threshold and probability.");
@@ -136,17 +135,18 @@ namespace Brawl.AI
             switch (state)
             {
                 case "FollowState":
-                    agent.TransitionToState(new State.FollowState(agent, PlayerController.Player.transform));
+                    (agent.stateDict[StateEnum.Follow] as State.FollowState).Set(PlayerController.Player.transform);
+                    agent.TransitionToState(StateEnum.Follow);
                     return "The status changes to following the player.";
                 case "HealState":
-                    agent.TransitionToState(new State.HealState(agent));
+                    agent.TransitionToState(StateEnum.Heal);
                     return "The status changes to healing.";
                 case "PatrolState":
-                    agent.TransitionToState(new State.PatrolState(agent));
+                    agent.TransitionToState(StateEnum.Patrol);
                     return "The status changes to patrolling.";
                 case "GuardState":
                     AdjPatrol(wanderRadius: 0);
-                    agent.TransitionToState(new State.PatrolState(agent));
+                    agent.TransitionToState(StateEnum.Patrol);
                     return "The status changes to patrolling, and the wander radius has been adjusted to 0.";
                 default:
                     return $"\"{state}\" does not exist";

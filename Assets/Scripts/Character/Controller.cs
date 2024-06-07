@@ -9,8 +9,8 @@ namespace Brawl
     public class Controller : MonoBehaviour
     {
         public Action<string> OnSpeak;
-        public Transform UIPosition;
         [SerializeField] private int factionId;
+        [SerializeField] private Transform uiPosition;
         private readonly Dictionary<string, float> attributes = new();
         private Health health;
         private Attack attack;
@@ -18,10 +18,11 @@ namespace Brawl
 
         public event Action<string, float, float?> OnAttributeChange;
 
+        public Transform UIPosition => uiPosition;
+        public int FactionId => factionId;
         public Health Health => health;
         public Attack Attack => attack;
         public NavMeshAgent Agent => agent;
-        public int FactionId => factionId;
 
         public float? GetAttribute(string name)
         {
@@ -61,7 +62,6 @@ namespace Brawl
             agent = GetComponent<NavMeshAgent>();
             health = GetComponent<Health>();
             attack = GetComponent<Attack>();
-            attack.factionId = FactionId;
         }
     }
 }

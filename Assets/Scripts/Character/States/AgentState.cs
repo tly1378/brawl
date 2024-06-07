@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Brawl.State
 {
     public abstract class AgentState
@@ -9,7 +6,7 @@ namespace Brawl.State
 
         public AgentState(AgentController agent) => Agent = agent;
 
-        public delegate AgentState StateChecker(AgentState state);
+        public delegate StateEnum? StateChecker(AgentState state);
 
         public event StateChecker OnUpdateState;
 
@@ -24,9 +21,9 @@ namespace Brawl.State
                 {
                     var method = (StateChecker)invocationList[i];
                     var result = method.Invoke(this);
-                    if (result != null)
+                    if (result.HasValue)
                     {
-                        Agent.TransitionToState(result);
+                        Agent.TransitionToState(result.Value);
                         return;
                     }
                 }

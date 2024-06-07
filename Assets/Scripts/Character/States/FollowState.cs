@@ -7,17 +7,21 @@ namespace Brawl.State
         public const float ViewRadius = 5f;
         public const float FollowingDistance = 2f;        
         private readonly Collider[] hitColliders = new Collider[5];
-        private readonly Transform target;
         private readonly float maxChaseRange;
+        private Transform target;
 
-        public FollowState(AgentController agent, Transform target) : base(agent)
+        public FollowState(AgentController agent) : base(agent)
         {
-            this.target = target;
             maxChaseRange = agent.Controller.GetAttribute("MaxChaseRange") ?? 10f;
             OnUpdateState += CheckEnemyToChase;
         }
 
-        private static AgentState CheckEnemyToChase(AgentState currentState)
+        public void Set(Transform target)
+        {
+            this.target = target;
+        }
+
+        private static StateEnum? CheckEnemyToChase(AgentState currentState)
         {
             if (currentState is not FollowState followState)
             {
@@ -32,7 +36,8 @@ namespace Brawl.State
                 Controller controller = hitCollider.GetComponent<Controller>();
                 if (controller != null && controller.FactionId != currentState.Agent.Controller.FactionId)
                 {
-                    return new MeleeChaseState(followState.Agent, controller, followState.maxChaseRange);
+                    (currentState.Agent.stateDict[StateEnum.Chase] as ChaseState).Set(controller, followState.maxChaseRange);
+                    return StateEnum.Chase;
                 }
             }
             return null;

@@ -1,6 +1,8 @@
 using UnityEngine;
 using System;
 using Brawl.State;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 
 namespace Brawl
 {
@@ -8,14 +10,14 @@ namespace Brawl
     public class AgentController : MonoBehaviour
     {
         public event Action<AgentState> OnStateChange;
-        
+
         public Transform HealPoint;
-        
+
         private AgentState currentState;
 
-        public Controller Controller { get; private set; }
+        public Dictionary<StateEnum, AgentState> stateDict;
 
-        public bool IsMelee { get; private set; }
+        public Controller Controller { get; private set; }
 
         private void Awake()
         {
@@ -24,15 +26,23 @@ namespace Brawl
 
         private async void Start()
         {
-            await UI.UIManager.Instance.CreateOverheadUI(this);
+            stateDict = new()
+            {
+                {StateEnum.Player, new PlayerState(this)},
+                {StateEnum.Chase, Controller.Attack is MeleeAttack?new MeleeChaseState(this):new RangedChaseState(this)},
+                {StateEnum.Dead, new DeadState(this)},
+                {StateEnum.Patrol, new PatrolState(this)},
+                {StateEnum.Follow, new FollowState(this)},
+                {StateEnum.Heal, new HealState(this)},
+            };
             Controller.Health.OnDead += TransitionToDeadState;
-            TransitionToState(new PatrolState(this));
-            IsMelee = Controller.Attack is MeleeAttack;
+            await UI.UIManager.Instance.CreateOverheadUI(this);
+            TransitionToState(StateEnum.Patrol);
         }
 
         private void TransitionToDeadState(Health _)
         {
-            TransitionToState(new DeadState(this));
+            TransitionToState(StateEnum.Dead);
         }
 
         private void OnDestroy()
@@ -45,15 +55,15 @@ namespace Brawl
             currentState?.UpdateState();
         }
 
-        public void TransitionToState(AgentState newState)
+        public void TransitionToState(StateEnum newState)
         {
-            if (newState == null)
-                return;
-
-            currentState?.ExitState();
-            currentState = newState;
-            currentState.EnterState();
-            OnStateChange?.Invoke(currentState);
+            if(stateDict.TryGetValue(newState, out var state))
+            {
+                currentState?.ExitState();
+                currentState = state;
+                currentState.EnterState();
+                OnStateChange?.Invoke(currentState);
+            }
         }
 
         void OnDrawGizmosSelected()

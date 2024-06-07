@@ -6,7 +6,7 @@ namespace Brawl.State
     {
         private readonly float meleeAttackRange = 1.0f;
 
-        public MeleeChaseState(AgentController agent, Controller target, float range = float.MaxValue) : base(agent, target, range)
+        public MeleeChaseState(AgentController agent) : base(agent)
         {
         }
 

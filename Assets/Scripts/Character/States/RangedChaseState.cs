@@ -6,7 +6,7 @@ namespace Brawl.State
     {
         private readonly float rangedAttackDistance = 10.0f;
 
-        public RangedChaseState(AgentController agent, Controller target, float range = float.MaxValue) : base(agent, target, range)
+        public RangedChaseState(AgentController agent) : base(agent)
         {
         }
 

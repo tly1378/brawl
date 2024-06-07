@@ -7,20 +7,24 @@ namespace Brawl.State
         private bool hasCheckedEscape;
         [SerializeField] private float escapeThreshold = 0.2f;
         [SerializeField] private float escapeProbability = 0.5f;
-        protected readonly Controller target;
-        private readonly float range;
+        protected Controller target;
+        private float maxChaseRange;
         private readonly Vector3 originalPosition;
 
-        public ChaseState(AgentController agent, Controller target, float range = float.MaxValue) : base(agent)
+        public ChaseState(AgentController agent) : base(agent)
         {
             escapeThreshold = agent.Controller.GetAttribute("EscapeThreshold").GetValueOrDefault(escapeThreshold);
             escapeProbability = agent.Controller.GetAttribute("EscapeProbability").GetValueOrDefault(escapeProbability);
-            this.range = range;
-            this.target = target;
-            agent.Controller.Attack.Target = target.Health;
             originalPosition = agent.transform.position;
             OnUpdateState += CheckEnemyAlive;
             OnUpdateState += CheckOverRange;
+        }
+
+        public void Set(Controller target, float maxChaseRange)
+        {
+            this.target = target;
+            Agent.Controller.Attack.Target = target.Health;
+            this.maxChaseRange = maxChaseRange;
         }
 
         public override void EnterState()
@@ -35,7 +39,7 @@ namespace Brawl.State
             Agent.Controller.OnAttributeChange -= HandleAttributeChange;
         }
 
-        private static AgentState CheckEnemyAlive(AgentState currentState)
+        private static StateEnum? CheckEnemyAlive(AgentState currentState)
         {
             if (currentState is not ChaseState chaseState)
             {
@@ -45,12 +49,12 @@ namespace Brawl.State
 
             if (chaseState.target == null || !chaseState.target.Health.IsAlive)
             {
-                return new PatrolState(chaseState.Agent);
+                return StateEnum.Patrol;
             }
             return null;
         }
 
-        private static AgentState CheckOverRange(AgentState currentState)
+        private static StateEnum? CheckOverRange(AgentState currentState)
         {
             if (currentState is not ChaseState chaseState)
             {
@@ -58,10 +62,10 @@ namespace Brawl.State
                 return null;
             }
 
-            if (Vector3.Distance(chaseState.originalPosition, chaseState.Agent.transform.position) > chaseState.range)
+            if (Vector3.Distance(chaseState.originalPosition, chaseState.Agent.transform.position) > chaseState.maxChaseRange)
             {
                 chaseState.Agent.Controller.Agent.SetDestination(chaseState.originalPosition);
-                return new PatrolState(chaseState.Agent);
+                return StateEnum.Patrol;
             }
             return null;
         }
@@ -74,7 +78,7 @@ namespace Brawl.State
                 {
                     if (Random.value < escapeProbability)
                     {
-                        Agent.TransitionToState(new HealState(Agent));
+                        Agent.TransitionToState(StateEnum.Heal);
                     }
                     hasCheckedEscape = true;
                 }
