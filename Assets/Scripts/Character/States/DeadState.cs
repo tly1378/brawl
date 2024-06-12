@@ -19,7 +19,7 @@ namespace Brawl.State
 
         private void OnRespawn()
         {
-            Agent.TransitionToState(StateEnum.Patrol);
+            Agent.TransitionToState(nameof(PatrolState));
         }
     }
 }

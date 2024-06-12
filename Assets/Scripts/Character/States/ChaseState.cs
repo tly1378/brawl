@@ -20,7 +20,7 @@ namespace Brawl.State
             OnUpdateState += CheckOverRange;
         }
 
-        public void Set(Controller target, float maxChaseRange)
+        public void Set(Controller target, float maxChaseRange = float.MaxValue)
         {
             this.target = target;
             Agent.Controller.Attack.Target = target.Health;
@@ -39,7 +39,7 @@ namespace Brawl.State
             Agent.Controller.OnAttributeChange -= HandleAttributeChange;
         }
 
-        private static StateEnum? CheckEnemyAlive(AgentState currentState)
+        private static string CheckEnemyAlive(AgentState currentState)
         {
             if (currentState is not ChaseState chaseState)
             {
@@ -49,12 +49,12 @@ namespace Brawl.State
 
             if (chaseState.target == null || !chaseState.target.Health.IsAlive)
             {
-                return StateEnum.Patrol;
+                return nameof(PatrolState);
             }
             return null;
         }
 
-        private static StateEnum? CheckOverRange(AgentState currentState)
+        private static string CheckOverRange(AgentState currentState)
         {
             if (currentState is not ChaseState chaseState)
             {
@@ -65,7 +65,7 @@ namespace Brawl.State
             if (Vector3.Distance(chaseState.originalPosition, chaseState.Agent.transform.position) > chaseState.maxChaseRange)
             {
                 chaseState.Agent.Controller.Agent.SetDestination(chaseState.originalPosition);
-                return StateEnum.Patrol;
+                return nameof(PatrolState);
             }
             return null;
         }
@@ -78,7 +78,7 @@ namespace Brawl.State
                 {
                     if (Random.value < escapeProbability)
                     {
-                        Agent.TransitionToState(StateEnum.Heal);
+                        Agent.TransitionToState(nameof(HealState));
                     }
                     hasCheckedEscape = true;
                 }

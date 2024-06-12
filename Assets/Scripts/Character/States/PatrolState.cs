@@ -29,16 +29,16 @@ namespace Brawl.State
             Agent.Controller.OnAttributeChange += HandleAttributeChange;
         }
 
-        private static StateEnum? CheckHPToHeal(AgentState currentState)
+        private static string CheckHPToHeal(AgentState currentState)
         {
             if (currentState.Agent.Controller.Health.CurrentHealth < currentState.Agent.Controller.Health.MaxHealth)
             {
-                return StateEnum.Heal;
+                return nameof(HealState);
             }
             return null;
         }
 
-        private static StateEnum? CheckEnemyToChase(AgentState currentState)
+        private static string CheckEnemyToChase(AgentState currentState)
         {
             if (currentState is not PatrolState patrolState)
             {
@@ -53,8 +53,8 @@ namespace Brawl.State
                 Controller controller = hitCollider.GetComponent<Controller>();
                 if (controller != null && controller.FactionId != currentState.Agent.Controller.FactionId)
                 {
-                    (currentState.Agent.stateDict[StateEnum.Chase] as ChaseState).Set(controller, patrolState.maxChaseRange);
-                    return StateEnum.Chase;
+                    (currentState.Agent.stateDict[nameof(ChaseState)] as ChaseState).Set(controller, patrolState.maxChaseRange);
+                    return nameof(ChaseState);
                 }
             }
             return null;

@@ -2,7 +2,6 @@ using UnityEngine;
 using System;
 using Brawl.State;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 
 namespace Brawl
 {
@@ -15,7 +14,7 @@ namespace Brawl
 
         private AgentState currentState;
 
-        public Dictionary<StateEnum, AgentState> stateDict;
+        public Dictionary<string, AgentState> stateDict;
 
         public Controller Controller { get; private set; }
 
@@ -28,21 +27,21 @@ namespace Brawl
         {
             stateDict = new()
             {
-                {StateEnum.Player, new PlayerState(this)},
-                {StateEnum.Chase, Controller.Attack is MeleeAttack?new MeleeChaseState(this):new RangedChaseState(this)},
-                {StateEnum.Dead, new DeadState(this)},
-                {StateEnum.Patrol, new PatrolState(this)},
-                {StateEnum.Follow, new FollowState(this)},
-                {StateEnum.Heal, new HealState(this)},
+                {nameof(PlayerState), new PlayerState(this)},
+                {nameof(ChaseState), Controller.Attack is MeleeAttack?new MeleeChaseState(this):new RangedChaseState(this)},
+                {nameof(DeadState), new DeadState(this)},
+                {nameof(PatrolState), new PatrolState(this)},
+                {nameof(FollowState), new FollowState(this)},
+                {nameof(HealState), new HealState(this)},
             };
             Controller.Health.OnDead += TransitionToDeadState;
             await UI.UIManager.Instance.CreateOverheadUI(this);
-            TransitionToState(StateEnum.Patrol);
+            TransitionToState(nameof(PatrolState));
         }
 
         private void TransitionToDeadState(Health _)
         {
-            TransitionToState(StateEnum.Dead);
+            TransitionToState(nameof(DeadState));
         }
 
         private void OnDestroy()
@@ -55,9 +54,9 @@ namespace Brawl
             currentState?.UpdateState();
         }
 
-        public void TransitionToState(StateEnum newState)
+        public void TransitionToState(string newState)
         {
-            if(stateDict.TryGetValue(newState, out var state))
+            if (stateDict.TryGetValue(newState, out var state))
             {
                 currentState?.ExitState();
                 currentState = state;

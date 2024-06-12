@@ -16,12 +16,12 @@ namespace Brawl.State
             Agent.Controller.Agent.SetDestination(Agent.HealPoint.position);
         }
 
-        private static StateEnum? CheckHPFull(AgentState currentState)
+        private static string CheckHPFull(AgentState currentState)
         {
             var distance = Vector3.Distance(currentState.Agent.transform.position, currentState.Agent.HealPoint.position);
             if (distance < HealDistance && currentState.Agent.Controller.Health.CurrentHealth >= currentState.Agent.Controller.Health.MaxHealth)
             {
-                return StateEnum.Patrol;
+                return nameof(PatrolState);
             }
             return null;
         }

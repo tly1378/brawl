@@ -21,7 +21,7 @@ namespace Brawl.State
             this.target = target;
         }
 
-        private static StateEnum? CheckEnemyToChase(AgentState currentState)
+        private static string CheckEnemyToChase(AgentState currentState)
         {
             if (currentState is not FollowState followState)
             {
@@ -36,8 +36,8 @@ namespace Brawl.State
                 Controller controller = hitCollider.GetComponent<Controller>();
                 if (controller != null && controller.FactionId != currentState.Agent.Controller.FactionId)
                 {
-                    (currentState.Agent.stateDict[StateEnum.Chase] as ChaseState).Set(controller, followState.maxChaseRange);
-                    return StateEnum.Chase;
+                    (currentState.Agent.stateDict[nameof(ChaseState)] as ChaseState).Set(controller, followState.maxChaseRange);
+                    return nameof(ChaseState);
                 }
             }
             return null;

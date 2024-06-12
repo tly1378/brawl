@@ -28,7 +28,7 @@ namespace Brawl
                     Controller.Agent.SetDestination(hit.point);
                     if (TryGetComponent<AgentController>(out var agent))
                     {
-                        agent.TransitionToState(StateEnum.Player);
+                        agent.TransitionToState(nameof(State.PlayerState));
                     }
                 }
             }

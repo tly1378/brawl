@@ -6,7 +6,7 @@ namespace Brawl.State
 
         public AgentState(AgentController agent) => Agent = agent;
 
-        public delegate StateEnum? StateChecker(AgentState state);
+        public delegate string StateChecker(AgentState state);
 
         public event StateChecker OnUpdateState;
 
@@ -21,9 +21,9 @@ namespace Brawl.State
                 {
                     var method = (StateChecker)invocationList[i];
                     var result = method.Invoke(this);
-                    if (result.HasValue)
+                    if (!string.IsNullOrEmpty(result))
                     {
-                        Agent.TransitionToState(result.Value);
+                        Agent.TransitionToState(result);
                         return;
                     }
                 }

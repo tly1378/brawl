@@ -1,8 +1,15 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 using ChatGPT;
 using ChatGPT.JsonModels;
 using Newtonsoft.Json.Linq;
 using Cysharp.Text;
+using System.Reflection;
+using System;
+using Brawl.State;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
+using System.IO;
 
 namespace Brawl.AI
 {
@@ -16,8 +23,8 @@ namespace Brawl.AI
         {
             base.OnInspectorGUI();
 
-            textFieldValue = UnityEditor.EditorGUILayout.TextField("∂‘ª∞øÚ", textFieldValue);
-            if (GUILayout.Button("∑¢ÀÕ"))
+            textFieldValue = UnityEditor.EditorGUILayout.TextField("ÂØπËØùÊ°Ü", textFieldValue);
+            if (GUILayout.Button("ÂèëÈÄÅ"))
             {
                 if (target is Chatbot chatbot && !string.IsNullOrEmpty(textFieldValue))
                 {
@@ -48,9 +55,13 @@ namespace Brawl.AI
             adjPatrolFunction = Session.AddParameter(adjPatrolFunction, "maxChaseRange", "A float representing the maximum distance to chase an enemy during patrol.", required: false);
 
             var changeStateFunction = Session.CreateFunction("ChangeState", "Changes the state of the robot to the specified state.");
-            changeStateFunction = Session.AddParameter(changeStateFunction, "state", "An enum representing the state to transition to. Possible values are: 'FollowState' (following the player), 'HealState' (returning to base for healing), 'PatrolState' (wandering around, patrolling), 'GuardState' (enter PatrolState and set the patrol radius to 0).");
+            changeStateFunction = Session.AddParameter(changeStateFunction, "state", "A string representing the state to transition to. Possible values are: 'FollowState' (following the player), 'HealState' (returning to base for healing), 'PatrolState' (wandering around, patrolling), 'GuardState' (enter PatrolState and set the patrol radius to 0). Custom statuses will not be listed.");
 
-            session.Tools = new JArray { adjEscapeFunction, adjPatrolFunction, changeStateFunction };
+            var createStateFunction = Session.CreateFunction("CreateState", "Create a new state to meet requirements that cannot be met by the existing state. This function will call the AI ‚Äã‚Äãmodel dedicated to generating the state.");
+            createStateFunction = Session.AddParameter(createStateFunction, "stateName", "The name of the new state cannot be the same as the existing state.");
+            createStateFunction = Session.AddParameter(createStateFunction, "requirement", "Functions that the state needs to implement");
+
+            session.Tools = new JArray { adjEscapeFunction, adjPatrolFunction, changeStateFunction, createStateFunction };
             session.Instance = this;
         }
 
@@ -59,13 +70,13 @@ namespace Brawl.AI
             switch (log)
             {
                 case Session.Log.Send:
-                    Debug.Log(content);
+                    UnityEngine.Debug.Log(content);
                     break;
                 case Session.Log.Receive:
-                    Debug.Log(content);
+                    UnityEngine.Debug.Log(content);
                     break;
                 case Session.Log.Error:
-                    Debug.Log(content);
+                    UnityEngine.Debug.Log(content);
                     break;
             }
         }
@@ -129,28 +140,62 @@ namespace Brawl.AI
         {
             if (!agent.Controller.Health.IsAlive)
             {
-                return "You are currently in a state of death. You can modify your status after resurrection.";
+                return "You are currently in a state of death. You can only modify your status after resurrection.";
             }
 
             switch (state)
             {
-                case "FollowState":
-                    (agent.stateDict[StateEnum.Follow] as State.FollowState).Set(PlayerController.Player.transform);
-                    agent.TransitionToState(StateEnum.Follow);
-                    return "The status changes to following the player.";
-                case "HealState":
-                    agent.TransitionToState(StateEnum.Heal);
-                    return "The status changes to healing.";
-                case "PatrolState":
-                    agent.TransitionToState(StateEnum.Patrol);
-                    return "The status changes to patrolling.";
+                case nameof(FollowState):
+                    (agent.stateDict[state] as FollowState).Set(PlayerController.Player.transform);
+                    break;
                 case "GuardState":
                     AdjPatrol(wanderRadius: 0);
-                    agent.TransitionToState(StateEnum.Patrol);
+                    agent.TransitionToState(state);
                     return "The status changes to patrolling, and the wander radius has been adjusted to 0.";
-                default:
-                    return $"\"{state}\" does not exist";
             }
+
+            agent.TransitionToState(state);
+            return $"The status changes to {state}.";
+        }
+
+        const string EXE_PATH = "D:\\Projects\\Brawl\\brawl_asm\\AsmTool\\bin\\Debug\\net8.0\\AsmTool.exe";
+        const string CODE_PATH = "D:\\Projects\\Brawl\\brawl_dynamic\\{0}.cs";
+        const string DLL_PATH = "D:\\Projects\\Brawl\\brawl_dynamic\\{0}.dll";
+
+        [ECA.Action("CreateState")]
+        public async Task<string> CreateState(string stateName, string requirement)
+        {
+            string codePath = ZString.Format(CODE_PATH, stateName);
+            string code = $@"namespace Brawl.State
+            {{
+                /* {requirement} */
+                public class {stateName} : AgentState
+                {{
+                    public {stateName}(AgentController agent) : base(agent)
+                    {{
+                    }}
+                }}
+            }}";
+            File.WriteAllText(codePath, code);
+
+            string dllPath = ZString.Format(DLL_PATH, stateName);
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = EXE_PATH,
+                Arguments = ZString.Concat(codePath, " ", dllPath)
+            };
+            using (Process process = Process.Start(startInfo))
+            {
+                await UniTask.RunOnThreadPool(process.WaitForExit);
+                int exitCode = process.ExitCode;
+            }
+
+            string assemblyPath = $"D:\\Projects\\Brawl\\brawl_dynamic\\{stateName}.dll";
+            Assembly assembly = Assembly.LoadFrom(assemblyPath);
+            Type type = assembly.GetType($"Brawl.State.{stateName}");
+            AgentState state = Activator.CreateInstance(type, args: agent) as AgentState;
+            agent.stateDict[stateName] = state;
+            return $"The new state \"{stateName}\" was generated successfully";
         }
     }
 }
