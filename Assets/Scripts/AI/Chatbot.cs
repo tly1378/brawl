@@ -18,6 +18,7 @@ namespace Brawl.AI
     public class ChatbotEditor : UnityEditor.Editor
     {
         private string textFieldValue = string.Empty;
+        private string stateName = string.Empty;
 
         public override void OnInspectorGUI()
         {
@@ -32,6 +33,23 @@ namespace Brawl.AI
                     textFieldValue = string.Empty;
                 }
             }
+
+            stateName = UnityEditor.EditorGUILayout.TextField("动态状态", stateName);
+            if (GUILayout.Button("加载"))
+            {
+                if (target is Chatbot chatbot && !string.IsNullOrEmpty(stateName))
+                {
+                    string result = chatbot.LoatState(stateName);
+                    UnityEngine.Debug.Log(result);
+                }
+            }
+            if (GUILayout.Button("切换"))
+            {
+                if (target is Chatbot chatbot && !string.IsNullOrEmpty(stateName))
+                {
+                    chatbot.ChangeState(stateName);
+                }                
+            }
         }
     }
 #endif
@@ -39,6 +57,8 @@ namespace Brawl.AI
     {
         private readonly Session session = new("gpt-4o");
         [SerializeField] private AgentController agent;
+
+        public AgentController Agent => agent;
 
         private void Awake()
         {
@@ -158,41 +178,23 @@ namespace Brawl.AI
             return $"The status changes to {state}.";
         }
 
-        const string EXE_PATH = "D:\\Projects\\Brawl\\brawl_asm\\AsmTool\\bin\\Debug\\net8.0\\AsmTool.exe";
-        const string CODE_PATH = "D:\\Projects\\Brawl\\brawl_dynamic\\{0}.cs";
-        const string DLL_PATH = "D:\\Projects\\Brawl\\brawl_dynamic\\{0}.dll";
-
         [ECA.Action("CreateState")]
         public async Task<string> CreateState(string stateName, string requirement)
         {
-            string codePath = ZString.Format(CODE_PATH, stateName);
-            string code = $@"namespace Brawl.State
-            {{
-                /* {requirement} */
-                public class {stateName} : AgentState
-                {{
-                    public {stateName}(AgentController agent) : base(agent)
-                    {{
-                    }}
-                }}
-            }}";
-            File.WriteAllText(codePath, code);
+            await CodeGenerater.NewState(stateName, requirement);            
+            await UniTask.WaitForSeconds(2);
+            return LoatState(stateName);
+        }
 
-            string dllPath = ZString.Format(DLL_PATH, stateName);
-            ProcessStartInfo startInfo = new()
-            {
-                FileName = EXE_PATH,
-                Arguments = ZString.Concat(codePath, " ", dllPath)
-            };
-            using (Process process = Process.Start(startInfo))
-            {
-                await UniTask.RunOnThreadPool(process.WaitForExit);
-                int exitCode = process.ExitCode;
-            }
-
+        public string LoatState(string stateName)
+        {
             string assemblyPath = $"D:\\Projects\\Brawl\\brawl_dynamic\\{stateName}.dll";
             Assembly assembly = Assembly.LoadFrom(assemblyPath);
             Type type = assembly.GetType($"Brawl.State.{stateName}");
+            if (type == null)
+            {
+                return "Failed to generate the new state.";
+            }
             AgentState state = Activator.CreateInstance(type, args: agent) as AgentState;
             agent.stateDict[stateName] = state;
             return $"The new state \"{stateName}\" was generated successfully";

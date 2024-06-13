@@ -19,26 +19,27 @@ namespace Brawl.State
             wanderRadius = agent.Controller.GetAttribute("WanderRadius") ?? 10f;
             maxChaseRange = agent.Controller.GetAttribute("MaxChaseRange") ?? 15f;
 
+            // 每帧都会执行的事件，当函数返回状态名时切换到对应的状态
             OnUpdateState += CheckHPToHeal;
             OnUpdateState += CheckEnemyToChase;
         }
 
+        // 可重载：进入状态时调用
         public override void EnterState()
         {
             wanderTimer = WanderInterval;
             Agent.Controller.OnAttributeChange += HandleAttributeChange;
         }
 
-        private static string CheckHPToHeal(AgentState currentState)
+        // 检查是否需要治疗
+        private string CheckHPToHeal(AgentState currentState)
         {
-            if (currentState.Agent.Controller.Health.CurrentHealth < currentState.Agent.Controller.Health.MaxHealth)
-            {
-                return nameof(HealState);
-            }
-            return null;
+            var health = currentState.Agent.Controller.Health;
+            return health.CurrentHealth < health.MaxHealth ? nameof(HealState) : null;
         }
 
-        private static string CheckEnemyToChase(AgentState currentState)
+        // 检查是否有敌人需要追击
+        private string CheckEnemyToChase(AgentState currentState)
         {
             if (currentState is not PatrolState patrolState)
             {
@@ -49,8 +50,7 @@ namespace Brawl.State
             int count = Physics.OverlapSphereNonAlloc(currentState.Agent.transform.position, Mathf.Min(patrolState.maxChaseRange, ViewRadius), patrolState.hitColliders);
             for (int i = 0; i < count; i++)
             {
-                Collider hitCollider = patrolState.hitColliders[i];
-                Controller controller = hitCollider.GetComponent<Controller>();
+                var controller = patrolState.hitColliders[i].GetComponent<Controller>();
                 if (controller != null && controller.FactionId != currentState.Agent.Controller.FactionId)
                 {
                     (currentState.Agent.stateDict[nameof(ChaseState)] as ChaseState).Set(controller, patrolState.maxChaseRange);
@@ -60,47 +60,39 @@ namespace Brawl.State
             return null;
         }
 
+        // 可重载：每帧调用
         public override void UpdateState()
         {
             base.UpdateState();
-            if (wanderRadius > 0)
+            if (wanderRadius <= 0) return;
+
+            wanderTimer += Time.deltaTime;
+            if (wanderTimer >= WanderInterval && Vector3.Distance(Agent.Controller.Agent.destination, Agent.transform.position) < 1f)
             {
-                wanderTimer += Time.deltaTime;
-                if (wanderTimer >= WanderInterval)
-                {
-                    if (Vector3.Distance(Agent.Controller.Agent.destination, Agent.transform.position) < 1f)
-                    {
-                        Vector3 newPos = RandomNavSphere(originalPosition, wanderRadius);
-                        Agent.Controller.Agent.SetDestination(newPos);
-                        wanderTimer = 0;
-                    }
-                }
+                Agent.Controller.Agent.SetDestination(RandomNavSphere(originalPosition, wanderRadius));
+                wanderTimer = 0;
             }
         }
 
+        // 可重载：退出状态时调用
         public override void ExitState()
         {
             Agent.Controller.OnAttributeChange -= HandleAttributeChange;
         }
 
+        // 获取随机导航点
         private static Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask = -1)
         {
-            Vector3 randDirection = Random.insideUnitSphere * dist;
-            randDirection += origin;
+            var randDirection = Random.insideUnitSphere * dist + origin;
             NavMesh.SamplePosition(randDirection, out NavMeshHit navHit, dist, layermask);
             return navHit.position;
         }
 
+        // 处理属性变化（Agent.Controller.SetAttribute）
         private void HandleAttributeChange(string name, float value, float? origin)
         {
-            if (name == "WanderRadius")
-            {
-                wanderRadius = value;
-            }
-            else if (name == "MaxChaseRange")
-            {
-                maxChaseRange = value;
-            }
+            if (name == "WanderRadius") wanderRadius = value;
+            if (name == "MaxChaseRange") maxChaseRange = value;
         }
     }
 }
