@@ -34,7 +34,9 @@ namespace Brawl
 
         private void OnStateChange(AgentState newState)
         {
-            text.SetText(newState.ToString());
+            string newText = newState.ToString();
+            //Debug.LogFormat("{0} => {1}", text.text, newText);
+            text.text = newText;
         }
 
         private void OnDestroy()

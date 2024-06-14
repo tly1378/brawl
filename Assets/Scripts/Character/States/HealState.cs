@@ -8,12 +8,19 @@ namespace Brawl.State
 
         public HealState(AgentController agent) : base(agent)
         {
-            OnUpdateState += CheckHPFull;
         }
 
         public override void EnterState()
         {
-            Agent.Controller.Agent.SetDestination(Agent.HealPoint.position);
+            base.EnterState();
+            OnUpdateState += CheckHPFull;
+            Agent.Controller.NavAgent.SetDestination(Agent.HealPoint.position);
+        }
+
+        public override void ExitState()
+        {
+            base.ExitState();
+            OnUpdateState -= CheckHPFull;
         }
 
         private static string CheckHPFull(AgentState currentState)

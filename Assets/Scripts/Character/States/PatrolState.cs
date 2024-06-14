@@ -10,25 +10,27 @@ namespace Brawl.State
         private float wanderTimer;
         private Vector3 originalPosition;
         private readonly Collider[] hitColliders = new Collider[5];
-        private float wanderRadius;
-        private float maxChaseRange;
+        [Adjustable] private float wanderRadius = 10f;
+        [Adjustable] private float maxChaseRange = 15f;
 
         public PatrolState(AgentController agent) : base(agent)
         {
-            originalPosition = agent.transform.position;
-            wanderRadius = agent.Controller.GetAttribute("WanderRadius") ?? 10f;
-            maxChaseRange = agent.Controller.GetAttribute("MaxChaseRange") ?? 15f;
-
-            // 每帧都会执行的事件，当函数返回状态名时切换到对应的状态
-            OnUpdateState += CheckHPToHeal;
-            OnUpdateState += CheckEnemyToChase;
         }
 
         // 可重载：进入状态时调用
         public override void EnterState()
         {
+            originalPosition = Agent.transform.position;
             wanderTimer = WanderInterval;
-            Agent.Controller.OnAttributeChange += HandleAttributeChange;
+            OnUpdateState += CheckHPToHeal;
+            OnUpdateState += CheckEnemyToChase;
+        }
+
+        // 可重载：退出状态时调用
+        public override void ExitState()
+        {
+            OnUpdateState -= CheckHPToHeal;
+            OnUpdateState -= CheckEnemyToChase;
         }
 
         // 检查是否需要治疗
@@ -67,17 +69,11 @@ namespace Brawl.State
             if (wanderRadius <= 0) return;
 
             wanderTimer += Time.deltaTime;
-            if (wanderTimer >= WanderInterval && Vector3.Distance(Agent.Controller.Agent.destination, Agent.transform.position) < 1f)
+            if (wanderTimer >= WanderInterval && Vector3.Distance(Agent.Controller.NavAgent.destination, Agent.transform.position) < 1f)
             {
-                Agent.Controller.Agent.SetDestination(RandomNavSphere(originalPosition, wanderRadius));
+                Agent.Controller.NavAgent.SetDestination(RandomNavSphere(originalPosition, wanderRadius));
                 wanderTimer = 0;
             }
-        }
-
-        // 可重载：退出状态时调用
-        public override void ExitState()
-        {
-            Agent.Controller.OnAttributeChange -= HandleAttributeChange;
         }
 
         // 获取随机导航点
@@ -86,13 +82,6 @@ namespace Brawl.State
             var randDirection = Random.insideUnitSphere * dist + origin;
             NavMesh.SamplePosition(randDirection, out NavMeshHit navHit, dist, layermask);
             return navHit.position;
-        }
-
-        // 处理属性变化（Agent.Controller.SetAttribute）
-        private void HandleAttributeChange(string name, float value, float? origin)
-        {
-            if (name == "WanderRadius") wanderRadius = value;
-            if (name == "MaxChaseRange") maxChaseRange = value;
         }
     }
 }

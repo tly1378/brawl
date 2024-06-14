@@ -16,10 +16,10 @@ namespace Brawl.State
 
             // 获取目标和代理的位置
             Vector3 targetPosition = target.transform.position;
-            Vector3 agentPosition = Agent.Controller.Agent.destination;
+            Vector3 agentPosition = Agent.Controller.NavAgent.destination;
             if (Vector3.Distance(targetPosition, agentPosition) > meleeAttackRange)
             {
-                Agent.Controller.Agent.SetDestination(targetPosition);
+                Agent.Controller.NavAgent.SetDestination(targetPosition);
             }
         }
     }

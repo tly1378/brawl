@@ -14,7 +14,7 @@ namespace Brawl
         private readonly Dictionary<string, float> attributes = new();
         private Health health;
         private Attack attack;
-        private NavMeshAgent agent;
+        private NavMeshAgent navAgent;
 
         public event Action<string, float, float?> OnAttributeChange;
 
@@ -22,7 +22,7 @@ namespace Brawl
         public int FactionId => factionId;
         public Health Health => health;
         public Attack Attack => attack;
-        public NavMeshAgent Agent => agent;
+        public NavMeshAgent NavAgent => navAgent;
 
         public float? GetAttribute(string name)
         {
@@ -59,7 +59,7 @@ namespace Brawl
 
         private void Awake()
         {
-            agent = GetComponent<NavMeshAgent>();
+            navAgent = GetComponent<NavMeshAgent>();
             health = GetComponent<Health>();
             attack = GetComponent<Attack>();
         }

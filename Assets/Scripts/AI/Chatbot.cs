@@ -6,10 +6,9 @@ using Cysharp.Text;
 using System.Reflection;
 using System;
 using Brawl.State;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
-using System.IO;
+using System.Linq;
 
 namespace Brawl.AI
 {
@@ -64,7 +63,7 @@ namespace Brawl.AI
         {
             ECA.ECA.SetMethods(ECA.ECAMap.sMethods);
             Session.Invoke = ECA.ECA.Invoke;
-            Session.onLog = Log;
+            //Session.onLog = Log;
 
             var adjEscapeFunction = Session.CreateFunction("AdjEscape", "Adjusts the escape behavior parameters for the controller based on the given threshold and probability.");
             adjEscapeFunction = Session.AddParameter(adjEscapeFunction, "threshold", "A float between 0 and 1 representing the HP threshold below which an escape attempt is triggered.", required: false);
@@ -77,8 +76,8 @@ namespace Brawl.AI
             var changeStateFunction = Session.CreateFunction("ChangeState", "Changes the state of the robot to the specified state.");
             changeStateFunction = Session.AddParameter(changeStateFunction, "state", "A string representing the state to transition to. Possible values are: 'FollowState' (following the player), 'HealState' (returning to base for healing), 'PatrolState' (wandering around, patrolling), 'GuardState' (enter PatrolState and set the patrol radius to 0). Custom statuses will not be listed.");
 
-            var createStateFunction = Session.CreateFunction("CreateState", "Create a new state to meet requirements that cannot be met by the existing state. This function will call the AI ​​model dedicated to generating the state.");
-            createStateFunction = Session.AddParameter(createStateFunction, "stateName", "The name of the new state cannot be the same as the existing state.");
+            var createStateFunction = Session.CreateFunction("CreateStates", "Create new states to meet requirements that cannot be met by the existing state. This function will call the AI ​​model dedicated to generating the states.");
+            createStateFunction = Session.AddParameter(createStateFunction, "scriptName", "The name of the script that contains the implementation of one or more states.");
             createStateFunction = Session.AddParameter(createStateFunction, "requirement", "Functions that the state needs to implement");
 
             session.Tools = new JArray { adjEscapeFunction, adjPatrolFunction, changeStateFunction, createStateFunction };
@@ -117,14 +116,14 @@ namespace Brawl.AI
 
             if (threshold >= 0)
             {
-                agent.Controller.SetAttribute("EscapeThreshold", threshold);
+                agent.Controller.SetAttribute("escapeThreshold", threshold);
                 report.AppendFormat("When HP falls below {0}%, an escape attempt will be triggered;", threshold * 100);
                 hasChanges = true;
             }
 
             if (probability >= 0)
             {
-                agent.Controller.SetAttribute("EscapeProbability", probability);
+                agent.Controller.SetAttribute("escapeProbability", probability);
                 report.AppendFormat("When determining whether to escape, there is a {0}% chance of escaping;", probability * 100);
                 hasChanges = true;
             }
@@ -178,26 +177,46 @@ namespace Brawl.AI
             return $"The status changes to {state}.";
         }
 
-        [ECA.Action("CreateState")]
-        public async Task<string> CreateState(string stateName, string requirement)
+        [ECA.Action("CreateStates")]
+        public async Task<string> CreateStates(string scriptName, string requirement)
         {
-            await CodeGenerater.NewState(stateName, requirement);            
-            await UniTask.WaitForSeconds(2);
-            return LoatState(stateName);
+            Debug.LogFormat("开始生成新状态：{0}，{1}", scriptName, requirement);
+            (var success, var log) = await CodeGenerater.TryCreateNewStates(scriptName, requirement);
+            if(success)
+            {
+                log += "\n\n" + LoatState(scriptName);
+                Debug.LogFormat("新状态生成成功：{0}", log);
+                return log;
+            }
+            else
+            {
+                Debug.LogFormat("新状态生成失败：{0}", log);
+                return log;
+            }
         }
 
-        public string LoatState(string stateName)
+        public string LoatState(string scriptName)
         {
-            string assemblyPath = $"D:\\Projects\\Brawl\\brawl_dynamic\\{stateName}.dll";
+            string assemblyPath = $"D:\\Projects\\Brawl\\brawl_dynamic\\{scriptName}.dll";
             Assembly assembly = Assembly.LoadFrom(assemblyPath);
-            Type type = assembly.GetType($"Brawl.State.{stateName}");
-            if (type == null)
+
+            // 获取所有继承自StateBase的类型
+            var derivedTypes = assembly.GetTypes()
+                                       .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(AgentState)))
+                                       .ToList();
+
+            // 实例化所有找到的类型并存储到agent.stateDict中
+            string[] names = new string[derivedTypes.Count];
+            for (int i = 0; i < derivedTypes.Count; i++)
             {
-                return "Failed to generate the new state.";
+                Type type = derivedTypes[i];
+                string typeName = type.Name;
+                AgentState state = Activator.CreateInstance(type, args: agent) as AgentState;
+                agent.stateDict[typeName] = state;
+                names[i] = '\"' + typeName + '\"';
             }
-            AgentState state = Activator.CreateInstance(type, args: agent) as AgentState;
-            agent.stateDict[stateName] = state;
-            return $"The new state \"{stateName}\" was generated successfully";
+
+            return $"The new state {string.Join(',', names)} was generated successfully";
         }
     }
 }

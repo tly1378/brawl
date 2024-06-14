@@ -1,10 +1,30 @@
+using System;
+using System.Linq;
+using System.Reflection;
+
 namespace Brawl.State
 {
     public abstract class AgentState
     {
         public AgentController Agent { get; }
 
-        public AgentState(AgentController agent) => Agent = agent;
+        public AgentState(AgentController agent)
+        {
+            Agent = agent;
+            Agent.Controller.OnAttributeChange += HandleAttributeChange;
+        }
+
+        ~AgentState()
+        {
+            Agent.Controller.OnAttributeChange -= HandleAttributeChange;
+        }
+
+        private void HandleAttributeChange(string attributeName, float newValue, float? origin)
+        {
+            Type type = GetType();
+            FieldInfo filed = type.GetField(attributeName);
+            filed?.SetValue(this, newValue);
+        }
 
         public delegate string StateChecker(AgentState state);
 
