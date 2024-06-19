@@ -1,4 +1,5 @@
 using UnityEngine;
+using Brawl.State;
 
 namespace Brawl
 {
@@ -20,17 +21,12 @@ namespace Brawl
 
         private void OnEnable()
         {
-            if(agentController) agentController.TransitionToState(nameof(State.PlayerState));
+            if(agentController) agentController.TransitionToState(nameof(PlayerState));
         }
 
         private void OnDisable()
         {
-            if (agentController) agentController.TransitionToState(nameof(State.PatrolState));
-        }
-
-        private void OnGUI()
-        {
-
+            if (agentController) agentController.TransitionToState(nameof(PatrolState));
         }
     }
 }

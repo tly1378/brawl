@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace Brawl.State
 {
@@ -22,9 +22,21 @@ namespace Brawl.State
         private void HandleAttributeChange(string attributeName, float newValue, float? origin)
         {
             Type type = GetType();
-            FieldInfo filed = type.GetField(attributeName);
-            filed?.SetValue(this, newValue);
+            PropertyInfo property = type.GetProperty(attributeName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (property != null && property.CanWrite)
+            {
+                try
+                {
+                    property.SetValue(this, newValue);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogErrorFormat("Failed to set the value for property {0}: {1}", attributeName, ex.Message);
+                }
+            }
         }
+
 
         public delegate string StateChecker(AgentState state);
 

@@ -13,6 +13,8 @@ namespace Brawl.State
         [Adjustable] private float wanderRadius = 10f;
         [Adjustable] private float maxChaseRange = 15f;
 
+        public float WanderRadius { get => wanderRadius; set => wanderRadius = value; }
+
         public PatrolState(AgentController agent) : base(agent)
         {
         }
@@ -66,12 +68,12 @@ namespace Brawl.State
         public override void UpdateState()
         {
             base.UpdateState();
-            if (wanderRadius <= 0) return;
+            if (WanderRadius <= 0) return;
 
             wanderTimer += Time.deltaTime;
             if (wanderTimer >= WanderInterval && Vector3.Distance(Agent.Controller.NavAgent.destination, Agent.transform.position) < 1f)
             {
-                Agent.Controller.NavAgent.SetDestination(RandomNavSphere(originalPosition, wanderRadius));
+                Agent.Controller.NavAgent.SetDestination(RandomNavSphere(originalPosition, WanderRadius));
                 wanderTimer = 0;
             }
         }

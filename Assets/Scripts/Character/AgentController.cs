@@ -21,19 +21,19 @@ namespace Brawl
         private void Awake()
         {
             Controller = GetComponent<Controller>();
-        }
-
-        private async void Start()
-        {
             stateDict = new()
             {
                 {nameof(PlayerState), new PlayerState(this)},
-                {nameof(ChaseState), Controller.Attack is MeleeAttack?new MeleeChaseState(this):new RangedChaseState(this)},
                 {nameof(DeadState), new DeadState(this)},
                 {nameof(PatrolState), new PatrolState(this)},
                 {nameof(FollowState), new FollowState(this)},
                 {nameof(HealState), new HealState(this)},
             };
+        }
+
+        private async void Start()
+        {
+            stateDict[nameof(ChaseState)] = Controller.Attack is MeleeAttack ? new MeleeChaseState(this) : new RangedChaseState(this);
             Controller.Health.OnDead += TransitionToDeadState;
             await UI.UIManager.Instance.CreateOverheadUI(this);
             TransitionToState(nameof(PatrolState));
@@ -62,6 +62,11 @@ namespace Brawl
                 currentState = state;
                 currentState.EnterState();
                 OnStateChange?.Invoke(currentState);
+                Debug.LogFormat("change into {0}.", newState);
+            }
+            else
+            {
+                Debug.LogErrorFormat("{0} doesn't exist.", newState);
             }
         }
 

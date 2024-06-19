@@ -169,7 +169,7 @@ namespace Brawl.AI
                     break;
                 case "GuardState":
                     AdjPatrol(wanderRadius: 0);
-                    agent.TransitionToState(state);
+                    agent.TransitionToState(nameof(PatrolState));
                     return "The status changes to patrolling, and the wander radius has been adjusted to 0.";
             }
 
