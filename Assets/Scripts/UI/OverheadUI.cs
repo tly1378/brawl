@@ -27,7 +27,7 @@ namespace Brawl.UI
         {
             target = agent.Controller.UIPosition;
             stateBar.Set(agent);
-            hpBar.Set(agent.Controller.Health);
+            hpBar.Set(agent.Controller.Health, TeamManager.Instance.GetColor(agent.Controller.FactionId));
             textBox.Set(agent.Controller);
         }
 
@@ -35,7 +35,7 @@ namespace Brawl.UI
         {
             target = player.Controller.UIPosition;
             stateBar.gameObject.SetActive(false);
-            hpBar.Set(player.Controller.Health);
+            hpBar.Set(player.Controller.Health, Color.green);
             textBox.Set(player.Controller);
         }
     }

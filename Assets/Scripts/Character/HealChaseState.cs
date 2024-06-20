@@ -1,11 +1,23 @@
-﻿using UnityEngine;
+﻿using System;
+using Brawl.State;
+using UnityEngine;
 
-namespace Brawl.State
+namespace Brawl
 {
-    public class MeleeChaseState : ChaseState
+    internal class HealChaseState : ChaseState
     {
-        public MeleeChaseState(AgentController agent) : base(agent)
+        public HealChaseState(AgentController agent) : base(agent)
         {
+            OnUpdateState += CheckPartnerFullHealth;
+        }
+
+        private string CheckPartnerFullHealth()
+        {
+            if(target.Health.CurrentHealth >= target.Health.MaxHealth)
+            {
+                return nameof(PatrolState);
+            }
+            return null;
         }
 
         public override void UpdateState()

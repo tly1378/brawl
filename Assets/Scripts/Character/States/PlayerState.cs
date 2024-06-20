@@ -32,14 +32,18 @@ namespace Brawl.State
                 for (int i = 0; i < count; i++)
                 {
                     Collider hitCollider = hitColliders[i];
-                    Controller target = hitCollider.GetComponent<Controller>();
-                    if (target != null && target.FactionId != Agent.Controller.FactionId)
+                    if (hitCollider.TryGetComponent<Controller>(out var target))
                     {
-                        var distance = Vector3.Distance(target.transform.position, Agent.transform.position);
-                        if (distance < minDistance)
+                        bool targetShouldBeFriend = Agent.Controller.Attack.TargetIsFriend;
+                        bool targetIsFriend = target.FactionId == Agent.Controller.FactionId;
+                        if (targetShouldBeFriend == targetIsFriend)
                         {
-                            nearest = target;
-                            minDistance = distance;
+                            var distance = Vector3.Distance(target.transform.position, Agent.transform.position);
+                            if (distance < minDistance)
+                            {
+                                nearest = target;
+                                minDistance = distance;
+                            }
                         }
                     }
                 }

@@ -9,11 +9,10 @@ namespace Brawl
         private Health[] healthComponents;
 
         private void Start()
-        {
-            healthComponents = FindObjectsByType<Health>(FindObjectsSortMode.None);
-            foreach (Health health in healthComponents)
+        {            
+            foreach (Controller controller in CharacterManager.Instance.Controllers)
             {
-                health.OnDead += HandleDeath;
+                controller.Health.OnDead += HandleDeath;
             }
         }
 

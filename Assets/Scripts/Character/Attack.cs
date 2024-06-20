@@ -7,6 +7,7 @@
         public float attackCooldown = 1f;
         protected Health target;
         protected float lastAttackTime;
+        protected Controller controller;
 
         public Health Target
         {
@@ -16,6 +17,13 @@
                 enabled = true;
                 target = value;
             }
+        }
+
+        public bool TargetIsFriend => attackDamage < 0;
+
+        private void Awake()
+        {
+            controller = GetComponent<Controller>();
         }
     }
 }

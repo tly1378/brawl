@@ -3,9 +3,9 @@ using UnityEngine.AddressableAssets;
 
 namespace Brawl
 {
-    public class MeleeAttack : Attack
+    public class HealAttack : Attack
     {
-        private const string effectName = "CFXR Hit A (Red)";
+        private const string effectName = "CFXR3 Hit Light B (Air)";
 
         private void Update()
         {
@@ -17,7 +17,7 @@ namespace Brawl
 
         private void CheckForAttack()
         {
-            if (Target && Target.IsAlive)
+            if (Target && Target.IsAlive && Target.NeedHeal)
             {
                 if (Vector3.Distance(Target.transform.position, transform.position) <= attackRange)
                 {
@@ -42,13 +42,10 @@ namespace Brawl
             }
         }
 
-        // å¯è§†åŒ–æ”»å‡»èŒƒå›´
+        // ¿ÉÊÓ»¯ÖÎÁÆ·¶Î§
         private void OnDrawGizmosSelected()
         {
-            if(TargetIsFriend)
-                Gizmos.color = Color.green;
-            else
-                Gizmos.color = Color.red;
+            Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(transform.position, attackRange);
         }
     }

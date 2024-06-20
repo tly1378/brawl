@@ -4,10 +4,13 @@ namespace Brawl.State
 {
     public class RangedChaseState : ChaseState
     {
-        private readonly float rangedAttackDistance = 10.0f;
+        private readonly float maxDistance;
+        private readonly float minDistance;
 
         public RangedChaseState(AgentController agent) : base(agent)
         {
+            maxDistance = attackDistance - 2;
+            minDistance = 3;
         }
 
         public override void UpdateState()
@@ -21,18 +24,18 @@ namespace Brawl.State
             // 远程：保持在适当的攻击距离
             float distanceToTarget = Vector3.Distance(targetPosition, agentPosition);
 
-            if (distanceToTarget > rangedAttackDistance)
+            if (distanceToTarget > maxDistance)
             {
                 // 距离太远，靠近目标
                 Vector3 direction = (agentPosition - targetPosition).normalized;
-                Vector3 newPosition = targetPosition + direction * rangedAttackDistance;
+                Vector3 newPosition = targetPosition + direction * maxDistance;
                 Agent.Controller.NavAgent.SetDestination(newPosition);
             }
-            else if (distanceToTarget < rangedAttackDistance * 0.5f)
+            else if (distanceToTarget < minDistance)
             {
                 // 距离太近，远离目标
                 Vector3 direction = (agentPosition - targetPosition).normalized;
-                Vector3 newPosition = targetPosition + direction * rangedAttackDistance;
+                Vector3 newPosition = targetPosition + direction * minDistance;
                 Agent.Controller.NavAgent.SetDestination(newPosition);
             }            
         }

@@ -6,19 +6,21 @@ namespace Brawl
 {
     public class Projectile : MonoBehaviour
     {
+        private static readonly Collider[] colliders = new Collider[5];
         [SerializeField] private Rigidbody rb;
         [SerializeField] private float projectileSpeed = 40f;
         [SerializeField] private float damage = 10f;
         [SerializeField] private float explosionRadius = 2f;
-        private static readonly Collider[] colliders = new Collider[5];
+        private Controller controller;
 
         private void Start()
         {
             Destroy(gameObject, 10f);
         }
 
-        public async void SetDamage(float damage, Transform target)
+        public async void SetDamage(float damage, Transform target, Controller owner = null)
         {
+            controller = owner;
             this.damage = damage;
             await transform.DOMoveY(transform.position.y + 2, 0.5f).AsyncWaitForCompletion();
             Vector3 direction = (target.position - transform.position).normalized;
@@ -41,10 +43,12 @@ namespace Brawl
             for (int i = 0; i < count; i++)
             {
                 Collider collider = colliders[i];
-                Health health = collider.GetComponent<Health>();
-                if (health != null)
+                if (collider.TryGetComponent<Health>(out var health))
                 {
-                    health.TakeDamage(damage);
+                    if (health.Controller == null || health.Controller.FactionId != controller.FactionId)
+                    {
+                        health.TakeDamage(damage);
+                    }
                 }
             }
         }

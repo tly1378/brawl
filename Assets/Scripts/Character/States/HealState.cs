@@ -23,10 +23,10 @@ namespace Brawl.State
             OnUpdateState -= CheckHPFull;
         }
 
-        private static string CheckHPFull(AgentState currentState)
+        private string CheckHPFull()
         {
-            var distance = Vector3.Distance(currentState.Agent.transform.position, currentState.Agent.HealPoint.position);
-            if (distance < HealDistance && currentState.Agent.Controller.Health.CurrentHealth >= currentState.Agent.Controller.Health.MaxHealth)
+            var distance = Vector3.Distance(Agent.transform.position, Agent.HealPoint.position);
+            if (distance < HealDistance && Agent.Controller.Health.CurrentHealth >= Agent.Controller.Health.MaxHealth)
             {
                 return nameof(PatrolState);
             }

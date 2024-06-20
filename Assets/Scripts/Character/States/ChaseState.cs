@@ -1,18 +1,32 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Brawl.State
 {
     public abstract class ChaseState : AgentState
     {
-        private bool hasCheckedEscape;
-        [Adjustable] private float escapeThreshold = 0.2f;
-        [Adjustable] private float escapeProbability = 0.5f;
         protected Controller target;
+        protected readonly float attackDistance;
+        private bool hasCheckedEscape;
         private float maxChaseRange;
         private Vector3 originalPosition;
+        private float escapeThreshold = 0.2f;
+        private float escapeHp = 0;
+
+        public float EscapeThreshold
+        {
+            get { return escapeThreshold; }
+            set
+            {
+                escapeHp = value * Agent.Controller.Health.MaxHealth;
+                escapeThreshold = value;
+            }
+        }
+        public float EscapeProbability { get; set; } = 0.5f;
 
         public ChaseState(AgentController agent) : base(agent)
         {
+            attackDistance = agent.Controller.Attack.attackRange;
         }
 
         public void Set(Controller target, float maxChaseRange = float.MaxValue)
@@ -27,43 +41,31 @@ namespace Brawl.State
             originalPosition = Agent.transform.position;
             hasCheckedEscape = false;
             Agent.Controller.Health.OnTakeDamage += HandleTakeDamage;
-            OnUpdateState += CheckEnemyAlive;
+            OnUpdateState += CheckTargetAlive;
             OnUpdateState += CheckOverRange;
         }
 
         public override void ExitState()
         {
             Agent.Controller.Health.OnTakeDamage -= HandleTakeDamage;
-            OnUpdateState -= CheckEnemyAlive;
+            OnUpdateState -= CheckTargetAlive;
             OnUpdateState -= CheckOverRange;
         }
 
-        private static string CheckEnemyAlive(AgentState currentState)
+        private string CheckTargetAlive()
         {
-            if (currentState is not ChaseState chaseState)
-            {
-                Debug.LogError("CheckEnemyAlive can only work during ChaseState.");
-                return null;
-            }
-
-            if (chaseState.target == null || !chaseState.target.Health.IsAlive)
+            if (target == null || !target.Health.IsAlive)
             {
                 return nameof(PatrolState);
             }
             return null;
         }
 
-        private static string CheckOverRange(AgentState currentState)
+        private string CheckOverRange()
         {
-            if (currentState is not ChaseState chaseState)
+            if (Vector3.Distance(originalPosition, Agent.transform.position) > maxChaseRange)
             {
-                Debug.LogError("CheckOverRange can only work during ChaseState.");
-                return null;
-            }
-
-            if (Vector3.Distance(chaseState.originalPosition, chaseState.Agent.transform.position) > chaseState.maxChaseRange)
-            {
-                chaseState.Agent.Controller.NavAgent.SetDestination(chaseState.originalPosition);
+                Agent.Controller.NavAgent.SetDestination(originalPosition);
                 return nameof(PatrolState);
             }
             return null;
@@ -71,11 +73,11 @@ namespace Brawl.State
 
         private void HandleTakeDamage()
         {
-            if (Agent.Controller.Health.CurrentHealth <= escapeThreshold * Agent.Controller.Health.MaxHealth)
+            if (Agent.Controller.Health.CurrentHealth <= escapeHp)
             {
                 if (!hasCheckedEscape)
                 {
-                    if (Random.value < escapeProbability)
+                    if (UnityEngine.Random.value < EscapeProbability)
                     {
                         Agent.TransitionToState(nameof(HealState));
                         Debug.Log(Agent.name + "选择逃跑");

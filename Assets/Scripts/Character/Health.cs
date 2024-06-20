@@ -14,7 +14,6 @@ namespace Brawl
         public event Action OnHPChange;
 
         public bool IsAlive => currentHealth > 0;
-
         public float CurrentHealth
         {
             get { return currentHealth; }
@@ -24,8 +23,14 @@ namespace Brawl
                 OnHPChange?.Invoke();
             }
         }
-
         public float MaxHealth { get; private set; } = 100;
+        public Controller Controller { get; private set; }
+        public bool NeedHeal => currentHealth < MaxHealth;
+
+        private void Awake()
+        {
+            Controller = GetComponent<Controller>();
+        }
 
         private void Start()
         {

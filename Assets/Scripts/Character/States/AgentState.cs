@@ -38,7 +38,7 @@ namespace Brawl.State
         }
 
 
-        public delegate string StateChecker(AgentState state);
+        public delegate string StateChecker();
 
         public event StateChecker OnUpdateState;
 
@@ -52,7 +52,7 @@ namespace Brawl.State
                 for (int i = 0; i < invocationList.Length; i++)
                 {
                     var method = (StateChecker)invocationList[i];
-                    var result = method.Invoke(this);
+                    var result = method.Invoke();
                     if (!string.IsNullOrEmpty(result))
                     {
                         Agent.TransitionToState(result);

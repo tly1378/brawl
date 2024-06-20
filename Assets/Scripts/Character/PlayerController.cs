@@ -19,14 +19,19 @@ namespace Brawl
             agentController = GetComponent<AgentController>();
         }
 
-        private void OnEnable()
+        private void Update()
         {
-            if(agentController) agentController.TransitionToState(nameof(PlayerState));
-        }
-
-        private void OnDisable()
-        {
-            if (agentController) agentController.TransitionToState(nameof(PatrolState));
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                if (agentController.CurrentState is PlayerState)
+                {
+                    agentController.TransitionToState(nameof(PatrolState));
+                }
+                else
+                {
+                    agentController.TransitionToState(nameof(PlayerState));
+                }
+            }
         }
     }
 }

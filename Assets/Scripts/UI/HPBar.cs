@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,10 +9,17 @@ namespace Brawl.UI
         [SerializeField] private Image image;
         private Health health;
 
-        public void Set(Health health)
+
+        public void Set(Health health, Color color)
         {
             this.health = health;
             health.OnHPChange += OnHPChange;
+            image.color = color;
+        }
+
+        internal void Set(Health health, object value)
+        {
+            throw new NotImplementedException();
         }
 
         private void OnHPChange()

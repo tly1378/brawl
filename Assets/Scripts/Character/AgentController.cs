@@ -11,12 +11,10 @@ namespace Brawl
         public event Action<AgentState> OnStateChange;
 
         public Transform HealPoint;
-
-        private AgentState currentState;
-
         public Dictionary<string, AgentState> stateDict;
 
         public Controller Controller { get; private set; }
+        public AgentState CurrentState { get; private set; }
 
         private void Awake()
         {
@@ -25,7 +23,6 @@ namespace Brawl
             {
                 {nameof(PlayerState), new PlayerState(this)},
                 {nameof(DeadState), new DeadState(this)},
-                {nameof(PatrolState), new PatrolState(this)},
                 {nameof(FollowState), new FollowState(this)},
                 {nameof(HealState), new HealState(this)},
             };
@@ -33,7 +30,28 @@ namespace Brawl
 
         private async void Start()
         {
-            stateDict[nameof(ChaseState)] = Controller.Attack is MeleeAttack ? new MeleeChaseState(this) : new RangedChaseState(this);
+            if (Controller.Attack is MeleeAttack)
+            {
+                stateDict[nameof(ChaseState)] = new MeleeChaseState(this);
+            }
+            else if (Controller.Attack is RangedAttack)
+            {
+                stateDict[nameof(ChaseState)] = new RangedChaseState(this);
+            }
+            else if (Controller.Attack is HealAttack)
+            {
+                stateDict[nameof(ChaseState)] = new HealChaseState(this);
+            }
+
+            if (Controller.Attack.TargetIsFriend)
+            {
+                stateDict[nameof(PatrolState)] = new DoctorPatrolState(this);
+            }
+            else
+            {
+                stateDict[nameof(PatrolState)] = new SoldierPatrolState(this);
+            }
+
             Controller.Health.OnDead += TransitionToDeadState;
             await UI.UIManager.Instance.CreateOverheadUI(this);
             TransitionToState(nameof(PatrolState));
@@ -51,17 +69,17 @@ namespace Brawl
 
         private void Update()
         {
-            currentState?.UpdateState();
+            CurrentState?.UpdateState();
         }
 
         public void TransitionToState(string newState)
         {
             if (stateDict.TryGetValue(newState, out var state))
             {
-                currentState?.ExitState();
-                currentState = state;
-                currentState.EnterState();
-                OnStateChange?.Invoke(currentState);
+                CurrentState?.ExitState();
+                CurrentState = state;
+                CurrentState.EnterState();
+                OnStateChange?.Invoke(CurrentState);
                 Debug.LogFormat("change into {0}.", newState);
             }
             else
@@ -73,7 +91,7 @@ namespace Brawl
         void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(transform.position, PatrolState.ViewRadius);
+            Gizmos.DrawWireSphere(transform.position, PatrolState.VIEW_RADIUS);
         }
     }
 }

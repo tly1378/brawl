@@ -6,7 +6,6 @@ namespace Brawl
 {
     public class RangedAttack : Attack
     {
-
         private void Update()
         {
             if (Time.time >= lastAttackTime + attackCooldown)
@@ -41,7 +40,7 @@ namespace Brawl
             // 设置投掷物的伤害
             if (projectile.TryGetComponent<Projectile>(out var projectileScript))
             {
-                projectileScript.SetDamage(attackDamage, health.transform);
+                projectileScript.SetDamage(attackDamage, health.transform, controller);
             }
         }
 
