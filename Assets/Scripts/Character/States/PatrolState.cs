@@ -29,7 +29,14 @@ namespace Brawl.State
         private string CheckHPToHeal()
         {
             var health = Agent.Controller.Health;
-            return health.CurrentHealth < health.MaxHealth ? nameof(HealState) : null;
+            if (health.CurrentHealth < health.MaxHealth)
+            {
+                return nameof(HealState);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         protected static Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask = -1)

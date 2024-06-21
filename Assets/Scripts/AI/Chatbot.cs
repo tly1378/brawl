@@ -102,7 +102,8 @@ namespace Brawl.AI
 
         internal async void Chat(string content)
         {
-            PlayerController.Player.Controller.OnSpeak(content);
+            var player = CinemachineManager.Instance.CurrentController;
+            player.OnSpeak(content);
             session.AddMessage(Role.user, content);
             await session.FetchAsync();
             agent.Controller.OnSpeak(session.LastMessage?.Content);
@@ -165,7 +166,9 @@ namespace Brawl.AI
             switch (state)
             {
                 case nameof(FollowState):
-                    (agent.stateDict[state] as FollowState).Set(PlayerController.Player.transform);
+                    var target = CinemachineManager.Instance.CurrentController.transform;
+                    var follow = agent.stateDict[state] as FollowState;
+                    follow.Set(target);
                     break;
                 case "GuardState":
                     AdjPatrol(wanderRadius: 0);

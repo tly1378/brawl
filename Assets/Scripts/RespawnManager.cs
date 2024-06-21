@@ -14,20 +14,13 @@ namespace Brawl
             {
                 controller.Health.OnDead += HandleDeath;
             }
+            Debug.Log("复活机制载入完毕");
         }
 
         private async void HandleDeath(Health health)
         {
             await UniTask.WaitForSeconds(respawnTime);
             health.Respawn();
-        }
-
-        private void OnDestroy()
-        {
-            foreach (Health health in healthComponents)
-            {
-                health.OnDead -= HandleDeath;
-            }
         }
     }
 }

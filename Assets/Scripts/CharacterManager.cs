@@ -2,19 +2,15 @@ using UnityEngine;
 
 namespace Brawl
 {
-    public class CharacterManager
+    public class CharacterManager : MonoBehaviour
     {
-        public static CharacterManager Instance { get; } = new CharacterManager();
+        public static CharacterManager Instance { get; private set; }
         public Controller[] Controllers { get; private set; }
 
-        private CharacterManager()
+        private void Awake()
         {
-            Controllers = Object.FindObjectsByType<Controller>(FindObjectsSortMode.None);
-
-            if (Controllers.Length == 0 || Controllers[0].Health == null)
-            {
-                Debug.LogError("CharacterManager只能在初始化完毕后被调用");
-            }
+            Instance = this;
+            Controllers = FindObjectsByType<Controller>(FindObjectsSortMode.None);
         }
     }
 }

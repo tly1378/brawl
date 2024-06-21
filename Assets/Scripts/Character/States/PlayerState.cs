@@ -5,16 +5,29 @@ namespace Brawl.State
     public class PlayerState : AgentState
     {
         private readonly Collider[] hitColliders = new Collider[5];
+        private bool isFocused = false;
 
         public PlayerState(AgentController agent) : base(agent)
         {
+            CinemachineManager.Instance.OnSwitchTarget += Instance_OnSwitchTarget;
+        }
+
+        public override void EnterState()
+        {
+            base.EnterState();
+            isFocused = Agent.Controller == CinemachineManager.Instance.CurrentController;
+        }
+
+        private void Instance_OnSwitchTarget(Controller current)
+        {
+            isFocused = Agent.Controller == current;
         }
 
         public override void UpdateState()
         {
             base.UpdateState();
 
-            if (Input.GetMouseButtonDown(0))
+            if (isFocused && Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out RaycastHit hit))
