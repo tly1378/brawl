@@ -18,6 +18,10 @@ namespace Brawl
         private void Awake()
         {
             Controller = GetComponent<Controller>();
+        }
+
+        private async void Start()
+        {
             stateDict = new()
             {
                 {nameof(PlayerState), new PlayerState(this)},
@@ -25,10 +29,6 @@ namespace Brawl
                 {nameof(FollowState), new FollowState(this)},
                 {nameof(HealState), new HealState(this)},
             };
-        }
-
-        private async void Start()
-        {
             if (Controller.Attack is MeleeAttack)
             {
                 stateDict[nameof(ChaseState)] = new MeleeChaseState(this);
@@ -41,7 +41,6 @@ namespace Brawl
             {
                 stateDict[nameof(ChaseState)] = new HealChaseState(this);
             }
-
             if (Controller.Attack.TargetIsFriend)
             {
                 stateDict[nameof(PatrolState)] = new DoctorPatrolState(this);

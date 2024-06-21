@@ -11,6 +11,7 @@ namespace Brawl.State
         {
             maxDistance = attackDistance - 2;
             minDistance = 3;
+            OnUpdateState += CheckTargetAlive;
         }
 
         public override void UpdateState()

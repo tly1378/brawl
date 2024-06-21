@@ -6,6 +6,7 @@ namespace Brawl.State
     {
         public MeleeChaseState(AgentController agent) : base(agent)
         {
+            OnUpdateState += CheckTargetAlive;
         }
 
         public override void UpdateState()

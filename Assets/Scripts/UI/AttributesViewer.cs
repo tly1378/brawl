@@ -5,23 +5,25 @@ namespace Brawl
 {
     public class AttributesViewer : MonoBehaviour
     {
-        [SerializeField] private AgentController agent;
         [SerializeField] private TextMeshProUGUI text;
 
         private void Start()
         {
-            agent.Controller.OnAttributeChange += OnAttributeChange;
+            foreach(var controller in CharacterManager.Instance.Controllers)
+            {
+                controller.OnAttributeChange += (name, value, origin) => OnAttributeChange(name, value, origin, controller);
+            }
         }
 
-        private void OnAttributeChange(string name, float value, float? origin)
+        private void OnAttributeChange(string name, float value, float? origin, Controller controller)
         {
             if (origin.HasValue)
             {
-                text.text += $"{name}: {origin}=>{value}\n";
+                text.text += $"[{controller}] {name}: {origin}=>{value}\n";
             }
             else
             {
-                text.text += $"{name}: {value}\n";
+                text.text += $"[{controller}] {name}: {value}\n";
             }
         }
     }

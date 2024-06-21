@@ -65,23 +65,28 @@ namespace Brawl.AI
             Session.Invoke = ECA.ECA.Invoke;
             //Session.onLog = Log;
 
+            // 逃跑：阈值、概率
             var adjEscapeFunction = Session.CreateFunction("AdjEscape", "Adjusts the escape behavior parameters for the controller based on the given threshold and probability.");
             adjEscapeFunction = Session.AddParameter(adjEscapeFunction, "threshold", "A float between 0 and 1 representing the HP threshold below which an escape attempt is triggered.", required: false);
             adjEscapeFunction = Session.AddParameter(adjEscapeFunction, "probability", "A float between 0 and 1 representing the probability of escaping when the escape condition is met.", required: false);
             
+            // 巡逻：巡逻半径、追击距离
             var adjPatrolFunction = Session.CreateFunction("AdjPatrol", "Adjusts the patrol behavior parameters for the controller based on the given wander radius and maximum chase range.");
             adjPatrolFunction = Session.AddParameter(adjPatrolFunction, "wanderRadius", "A float representing the radius within which the character can wander during patrol.", required: false);
             adjPatrolFunction = Session.AddParameter(adjPatrolFunction, "maxChaseRange", "A float representing the maximum distance to chase an enemy during patrol.", required: false);
 
+            // 切换状态：状态名
             var changeStateFunction = Session.CreateFunction("ChangeState", "Changes the state of the robot to the specified state.");
             changeStateFunction = Session.AddParameter(changeStateFunction, "state", "A string representing the state to transition to. Possible values are: 'FollowState' (following the player), 'HealState' (returning to base for healing), 'PatrolState' (wandering around, patrolling), 'GuardState' (enter PatrolState and set the patrol radius to 0). Custom statuses will not be listed.");
 
-            var createStateFunction = Session.CreateFunction("CreateStates", "Create new states to meet requirements that cannot be met by the existing state. This function will call the AI ​​model dedicated to generating the states.");
-            createStateFunction = Session.AddParameter(createStateFunction, "scriptName", "The name of the script that contains the implementation of one or more states.");
-            createStateFunction = Session.AddParameter(createStateFunction, "requirement", "Functions that the state needs to implement");
+            //// 开发状态：功能集名、需求
+            //var createStateFunction = Session.CreateFunction("CreateStates", "Create new states to meet requirements that cannot be met by the existing state. This function will call the AI ​​model dedicated to generating the states.");
+            //createStateFunction = Session.AddParameter(createStateFunction, "scriptName", "The name of the script that contains the implementation of one or more states.");
+            //createStateFunction = Session.AddParameter(createStateFunction, "requirement", "Functions that the state needs to implement");
 
-            session.Tools = new JArray { adjEscapeFunction, adjPatrolFunction, changeStateFunction, createStateFunction };
+            session.Tools = new JArray { adjEscapeFunction, adjPatrolFunction, changeStateFunction, /*createStateFunction*/ };
             session.Instance = this;
+            session.AddMessage(Role.system, "Your answer needs to be concise and humanized. Answer in Chinese.");
         }
 
         private void Log(string content, Session.Log log)
@@ -89,13 +94,13 @@ namespace Brawl.AI
             switch (log)
             {
                 case Session.Log.Send:
-                    UnityEngine.Debug.Log(content);
+                    Debug.Log(content);
                     break;
                 case Session.Log.Receive:
-                    UnityEngine.Debug.Log(content);
+                    Debug.Log(content);
                     break;
                 case Session.Log.Error:
-                    UnityEngine.Debug.Log(content);
+                    Debug.Log(content);
                     break;
             }
         }
@@ -117,14 +122,14 @@ namespace Brawl.AI
 
             if (threshold >= 0)
             {
-                agent.Controller.SetAttribute("escapeThreshold", threshold);
+                agent.Controller.SetAttribute("EscapeThreshold", threshold);
                 report.AppendFormat("When HP falls below {0}%, an escape attempt will be triggered;", threshold * 100);
                 hasChanges = true;
             }
 
             if (probability >= 0)
             {
-                agent.Controller.SetAttribute("escapeProbability", probability);
+                agent.Controller.SetAttribute("EscapeProbability", probability);
                 report.AppendFormat("When determining whether to escape, there is a {0}% chance of escaping;", probability * 100);
                 hasChanges = true;
             }

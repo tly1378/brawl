@@ -22,6 +22,8 @@ namespace Brawl.State
         {
             isFocused = Agent.Controller == current;
         }
+                
+        protected RaycastHit[] raycastResult = new RaycastHit[5];
 
         public override void UpdateState()
         {
@@ -30,8 +32,10 @@ namespace Brawl.State
             if (isFocused && Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out RaycastHit hit))
+                int count = Physics.RaycastNonAlloc(ray, raycastResult, float.MaxValue, LayerMask.GetMask("Ground"));
+                for (int i = 0; i < count; i++)
                 {
+                    RaycastHit hit = raycastResult[i];
                     Agent.Controller.NavAgent.SetDestination(hit.point);
                 }
             }

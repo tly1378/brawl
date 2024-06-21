@@ -5,15 +5,15 @@ using UnityEngine;
 
 namespace Brawl
 {
-    internal class TeamManager
+    internal class TeamManager : MonoBehaviour
     {
-        public static TeamManager Instance { get; } = new TeamManager();
+        public static TeamManager Instance { get; private set; }
 
         private readonly Dictionary<int, Team> teams = new();
 
-        private TeamManager()
+        private void Awake()
         {
-
+            Instance = this;
         }
 
         public Team GetTeam(int factionId)
@@ -27,34 +27,37 @@ namespace Brawl
             teams[factionId] = newTeam;
             return newTeam;
         }
-    }
 
-    internal class Team
-    {
-        private static readonly Color[] colors = new[] { Color.green, Color.red, Color.blue, Color.gray };
-        public int Id { get; private set; }
-        public Color Color { get; private set; }
-        public Vector3 Base { get; set; }
-
-        // 冲锋事件
-        public event Action OnCharge;
-
-        public Team(int id)
+        internal class Team
         {
-            Id = id;
-            Color = colors[id];
-            TeamClock();
-        }
+            private static readonly Color[] colors = new[] { Color.green, Color.red, Color.blue, Color.gray };
+            private const float minTime = 20;
+            private const float maxTime = 35;
 
-        private async void TeamClock()
-        {
-            while (true)
+            public int Id { get; private set; }
+            public Color Color { get; private set; }
+            public Vector3 Base { get; set; }
+
+            // 冲锋事件
+            public event Action OnCharge;
+
+            public Team(int id)
             {
-                float time = UnityEngine.Random.Range(20, 35);
-                Debug.LogFormat("队伍{0}将在{1}秒后开始冲锋", Id, time);
-                await UniTask.WaitForSeconds(time);
-                Debug.LogFormat("队伍{0}开始冲锋", Id);
-                OnCharge?.Invoke();
+                Id = id;
+                Color = colors[id];
+                TeamClock();
+            }
+
+            private async void TeamClock()
+            {
+                while (true)
+                {
+                    float time = UnityEngine.Random.Range(minTime, maxTime);
+                    Debug.LogFormat("队伍{0}将在{1}秒后开始冲锋", Id, time);
+                    await UniTask.WaitForSeconds(time);
+                    Debug.LogFormat("队伍{0}开始冲锋", Id);
+                    OnCharge?.Invoke();
+                }
             }
         }
     }

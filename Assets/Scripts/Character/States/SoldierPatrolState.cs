@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 namespace Brawl.State
 {
@@ -60,6 +61,13 @@ namespace Brawl.State
                 }
             }
             return null;
+        }
+
+        private static Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask = -1)
+        {
+            var randDirection = Random.insideUnitSphere * dist + origin;
+            NavMesh.SamplePosition(randDirection, out NavMeshHit navHit, dist, layermask);
+            return navHit.position;
         }
     }
 }

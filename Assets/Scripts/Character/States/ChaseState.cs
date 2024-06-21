@@ -11,7 +11,7 @@ namespace Brawl.State
         private float maxChaseRange;
         private Vector3 originalPosition;
         private float escapeThreshold = 0.2f;
-        private float escapeHp = 0;
+        private float escapeHp = 20;
 
         public float EscapeThreshold
         {
@@ -41,18 +41,16 @@ namespace Brawl.State
             originalPosition = Agent.transform.position;
             hasCheckedEscape = false;
             Agent.Controller.Health.OnTakeDamage += HandleTakeDamage;
-            OnUpdateState += CheckTargetAlive;
             OnUpdateState += CheckOverRange;
         }
 
         public override void ExitState()
         {
             Agent.Controller.Health.OnTakeDamage -= HandleTakeDamage;
-            OnUpdateState -= CheckTargetAlive;
             OnUpdateState -= CheckOverRange;
         }
 
-        private string CheckTargetAlive()
+        protected string CheckTargetAlive()
         {
             if (target == null || !target.Health.IsAlive)
             {
