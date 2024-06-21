@@ -9,7 +9,6 @@ namespace Brawl
     public class AgentController : MonoBehaviour
     {
         public event Action<AgentState> OnStateChange;
-
         public Transform HealPoint;
         public Dictionary<string, AgentState> stateDict;
 
@@ -80,7 +79,6 @@ namespace Brawl
                 CurrentState = state;
                 CurrentState.EnterState();
                 OnStateChange?.Invoke(CurrentState);
-                Debug.LogFormat("change into {0}.", newState);
             }
             else
             {
@@ -90,6 +88,7 @@ namespace Brawl
 
         void OnDrawGizmosSelected()
         {
+            //йср╟
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, PatrolState.VIEW_RADIUS);
         }

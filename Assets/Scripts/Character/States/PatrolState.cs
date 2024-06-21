@@ -6,7 +6,7 @@ namespace Brawl.State
     public abstract class PatrolState : AgentState
     {
         public const float VIEW_RADIUS = 15f;
-        protected const float WanderInterval = 5f;
+        protected const float WANDER_INTERVAL = 5f;
         protected float wanderTimer;
         protected Vector3 originalPosition;
         protected readonly Collider[] hitColliders = new Collider[5];
@@ -23,7 +23,7 @@ namespace Brawl.State
         public override void EnterState()
         {
             originalPosition = Agent.transform.position;
-            wanderTimer = WanderInterval;
+            wanderTimer = WANDER_INTERVAL;
         }
 
         private string CheckHPToHeal()

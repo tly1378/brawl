@@ -10,6 +10,12 @@ namespace Brawl
 
         private readonly List<Health> healthTargets = new();
 
+        private void Start()
+        {
+            var team = TeamManager.Instance.GetTeam(factionId);
+            team.Base = transform.position;
+        }
+
         void OnTriggerEnter(Collider other)
         {
             Controller health = other.GetComponent<Controller>();
